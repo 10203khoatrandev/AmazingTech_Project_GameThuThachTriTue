@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import LeaderBoard from './assets/Screens/LeaderBoard';
+import LeaderBoard from './Components/Screens/LeaderBoard';
 
 export default function App() {
   return (
