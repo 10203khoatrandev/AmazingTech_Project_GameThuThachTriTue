@@ -119,7 +119,7 @@ export default StatsComponent;
 const styles = StyleSheet.create({
     scrollContent: {
         minHeight: Dimensions.get("window").height + 200,
-        paddingBottom: 40,
+        paddingBottom: 40, 
     },
     header: {
         flexDirection: "row",

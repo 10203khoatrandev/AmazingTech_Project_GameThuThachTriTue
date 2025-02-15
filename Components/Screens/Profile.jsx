@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import BadgeComponent from "../component/Badge";
-import StatsComponent from "../component/Stats";
+import BadgeComponent from "../Component/Badge";
+import StatsComponent from "../Component/Stats";
 // import DetailComponent from "../component/Detail"; 
 
 const ProfileScreen = () => {
@@ -39,7 +39,7 @@ const ProfileScreen = () => {
             <View style={styles.profileCard}>
                 <View style={styles.avatarContainer}>
                     <Image
-                        source={require("../assets/MaskGroup.png")}
+                        source={require("../Images/MaskGroup.png")}
                         style={styles.avatar}
                     />
                     <View style={styles.flagContainer}>
@@ -58,13 +58,13 @@ const ProfileScreen = () => {
                         <Text style={styles.statText}>POINTS</Text>
                         <Text style={styles.statNumber}>590</Text>
                     </View>
-                    <Image source={require("../assets/Divider.png")} />
+                    <Image source={require("../Images/Divider.png")} />
                     <View style={styles.stat}>
                         <Icon name="globe" size={24} color="white" />
                         <Text style={styles.statText}>WORLD RANK</Text>
                         <Text style={styles.statNumber}>#1,438</Text>
                     </View>
-                    <Image source={require("../assets/Divider.png")} />
+                    <Image source={require("../Images/Divider.png")} />
                     <View style={styles.stat}>
                         <FontAwesome5 name="medal" size={24} color="white" />
                         <Text style={styles.statText}>LOCAL RANK</Text>

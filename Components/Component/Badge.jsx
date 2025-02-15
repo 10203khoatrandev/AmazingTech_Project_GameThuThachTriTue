@@ -8,17 +8,17 @@ const BadgeComponent = () => {
             <View style={styles.badgeRow}>
                 <View style={styles.badge}>
                     <TouchableOpacity >
-                        <Image source={require("../assets/BadgeClock.png")} style={styles.image} />
+                        <Image source={require("../Images/BadgeClock.png")} style={styles.image} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.badge}>
                     <TouchableOpacity >
-                        <Image source={require("../assets/BadgeChart.png")} style={styles.image} />
+                        <Image source={require("../Images/BadgeChart.png")} style={styles.image} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.badge}>
                     <TouchableOpacity >
-                        <Image source={require("../assets/BadgeFace.png")} style={styles.image} />
+                        <Image source={require("../Images/BadgeFace.png")} style={styles.image} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -26,17 +26,17 @@ const BadgeComponent = () => {
             <View style={styles.badgeRow}>
                 <View style={styles.badge}>
                     <TouchableOpacity >
-                        <Image source={require("../assets/BadgeMedal.png")} style={styles.image} />
+                        <Image source={require("../Images/BadgeMedal.png")} style={styles.image} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.badge}>
                     <TouchableOpacity >
-                        <Image source={require("../assets/BadgeShape.png")} style={styles.image} />
+                        <Image source={require("../Images/BadgeShape.png")} style={styles.image} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.badge}>
                     <TouchableOpacity >
-                        <Image source={require("../assets/BadgeLock.png")} style={styles.image} />
+                        <Image source={require("../Images/BadgeLock.png")} style={styles.image} />
                     </TouchableOpacity>
                 </View>
             </View>
