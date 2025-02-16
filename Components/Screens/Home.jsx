@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   ImageBackground,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 const Home = () => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   return (
     <ScrollView contentContainerStyle={[styles.container]}>
       <View style={styles.header}>
@@ -26,7 +28,7 @@ const Home = () => {
                 lineHeight: 18,
               }}
             >
-              GOOD MORNING!
+              Chào mừng trở lại!
             </Text>
           </View>
           <Text
@@ -56,50 +58,50 @@ const Home = () => {
           <View style={{ gap: 10 }}>
             <Text
               style={{
-                fontSize: "14",
+                fontSize: 18,
                 color: "#660012",
                 fontWeight: "600",
               }}
             >
-              RECENT QUIZ
+              Tranh Tài
             </Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
+            <View style={{ flexDirection: "row", gap: 15 }}>
               <Image
                 style={{
                   tintColor: "#660012",
                 }}
-                source={require("../Images/headphone.png")}
+                source={require("../Images/boxing.png")}
               />
               <Text
                 style={{
-                  fontSize: 18,
+                  width: 250,
+                  fontSize: 14,
                   color: "#660012",
                   fontWeight: "600",
                 }}
               >
-                A Basic Music Quiz
+                Thách đấu với mọi người để đạt thứ hạng cao hơn!
               </Text>
             </View>
           </View>
-          <Image source={require("../Images/percent.png")} />
         </ImageBackground>
       </TouchableOpacity>
       <View style={styles.findFriendBox}>
         <ImageBackground
-          source={require("../Images/maskFriend.png")} // Đường dẫn đến hình nền
+          source={require("../Images/maskFriend.png")}
           style={styles.maskFriend}
           resizeMode="cover"
         >
-          <Text style={styles.featuredText}>FEATURED</Text>
+          <Text style={styles.featuredText}>Tiêu Điểm</Text>
           <Text style={styles.challengeText}>
-            Take part in challenges with friends or other players
+            Tham gia vào trò chơi với bạn bè hoặc người lạ
           </Text>
           <TouchableOpacity style={styles.btnFindFriend}>
             <Image
               source={require("../Images/friend.png")}
               style={styles.friendIcon}
             />
-            <Text style={styles.findFriendText}>Find Friends</Text>
+            <Text style={styles.findFriendText}>Kết bạn ngay</Text>
           </TouchableOpacity>
           <Image
             style={styles.friend1Image}
@@ -113,16 +115,18 @@ const Home = () => {
       </View>
       <View style={styles.liveQuiz}>
         <View style={styles.liveQuizTextTitle}>
-          <Text style={styles.liveText}>Live Quizzes</Text>
+          <Text style={styles.liveText}>Bộ câu hỏi hiện hành</Text>
           <TouchableOpacity>
-            <Text style={styles.seeAllText}>See all</Text>
+            <Text style={styles.seeAllText}>Xem tất cả</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.quizBox}>
+        <TouchableOpacity 
+        onPress={() => navigation.navigate("QAmonitor", {category: "Khoa Học và Công nghệ"})} 
+        style={styles.quizBox}>
           <View style={styles.quizImg}>
             <Image
               style={{ width: 45, height: 45 }}
-              source={require("../Images/math.png")}
+              source={require("../Images/atom.png")}
             />
           </View>
           <View style={{ justifyContent: "center", gap: 10 }}>
@@ -133,7 +137,7 @@ const Home = () => {
                 fontWeight: "bold",
               }}
             >
-              Math Quiz
+              Khoa học & Công nghệ
             </Text>
             <Text
               style={{
@@ -141,7 +145,77 @@ const Home = () => {
                 color: "#858494",
               }}
             >
-              Math • 5 Quizzes
+              Khoa học & Công nghệ • 20 câu hỏi
+            </Text>
+          </View>
+          <View style={{ justifyContent: "center", marginRight: 10 }}>
+            <Image
+              style={{ width: 20, height: 20, tintColor: "#6A5AE0" }}
+              source={require("../Images/forward.png")}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity 
+        onPress={() => navigation.navigate("QAmonitor", {category: "Địa lý và Môi trường"})}
+        style={styles.quizBox}>
+          <View style={styles.quizImg}>
+            <Image
+              style={{ width: 45, height: 45 }}
+              source={require("../Images/geography.png")}
+            />
+          </View>
+          <View style={{ justifyContent: "center", gap: 10 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#0C092A",
+                fontWeight: "bold",
+              }}
+            >
+              Địa lý & Môi trường
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#858494",
+              }}
+            >
+              Địa lý & Môi trường • 20 câu hỏi
+            </Text>
+          </View>
+          <View style={{ justifyContent: "center", marginRight: 10 }}>
+            <Image
+              style={{ width: 20, height: 20, tintColor: "#6A5AE0" }}
+              source={require("../Images/forward.png")}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity 
+        onPress={() => navigation.navigate("QAmonitor", {category: "Thể thao và Giải trí"})}
+        style={styles.quizBox}>
+          <View style={styles.quizImg}>
+            <Image
+              style={{ width: 45, height: 45 }}
+              source={require("../Images/entertainment.png")}
+            />
+          </View>
+          <View style={{ justifyContent: "center", gap: 10 }}>
+            <Text
+              style={{
+                fontSize: 16,
+                color: "#0C092A",
+                fontWeight: "bold",
+              }}
+            >
+              Thể thao & Giải trí
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                color: "#858494",
+              }}
+            >
+              Thể thao & Giải trí • 20 câu hỏi
             </Text>
           </View>
           <View style={{ justifyContent: "center", marginRight: 10 }}>
@@ -166,7 +240,7 @@ const styles = StyleSheet.create({
   },
   header: {
     width: "90%",
-    marginTop: 20,
+    marginTop: 65,
     flexDirection: "row",
     alignContent: "center",
     justifyContent: "space-between",
@@ -293,12 +367,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignSelf: "center",
     flexDirection: "row",
+    margin: 10,
   },
   quizImg: {
     width: 64,
     height: 64,
     backgroundColor: "#C4D0FB",
-    borderRadius: 20,
+    borderRadius: 15,
     margin: 5,
     justifyContent: "center",
     alignItems: "center",
