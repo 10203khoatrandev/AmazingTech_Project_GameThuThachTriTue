@@ -1,0 +1,930 @@
+[
+    {
+        "question": "Mặt trời là ngôi sao gần Trái Đất nhất.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Mặt trời là ngôi sao gần Trái đất nhất."
+      },
+      {
+        "question": "Nước sôi ở 100°C ở mọi điều kiện.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Nhiệt độ sôi của nước phụ thuộc vào áp suất."
+      },
+      {
+        "question": "Einstein là người phát minh ra bóng đèn.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Thomas Edison là người phát minh ra bóng đèn."
+      },
+      {
+        "question": "Tế bào là đơn vị cơ bản của mọi sinh vật sống.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Tế bào là đơn vị cơ bản của mọi sinh vật sống."
+      },
+      {
+        "question": "Động vật có thể sống mà không cần oxy.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Hầu hết các loài động vật cần oxy để sống."
+      },
+      {
+        "question": "Mặt trăng tự phát sáng vào ban đêm.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Mặt trăng phản chiếu ánh sáng mặt trời."
+      },
+      {
+        "question": "Sắt dẫn điện tốt hơn nhôm.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Nhôm dẫn điện tốt hơn sắt."
+      },
+      {
+        "question": "Vắc-xin có thể giúp phòng ngừa một số bệnh truyền nhiễm.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Vắc-xin có thể giúp phòng ngừa một số bệnh truyền nhiễm."
+      },
+      {
+        "question": "Máy tính đầu tiên được phát minh vào thế kỷ 20.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Máy tính đầu tiên được phát minh vào thế kỷ 20."
+      },
+      {
+        "question": "Con người chỉ sử dụng 10% bộ não.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Đây là một quan niệm sai lầm."
+      },
+      {
+        "question": "Tất cả kim loại đều dẫn điện.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Không phải tất cả kim loại đều dẫn điện."
+      },
+      {
+        "question": "Virus có thể tự sinh sản mà không cần vật chủ.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Virus cần vật chủ để sinh sản."
+      },
+      {
+        "question": "Sao Hỏa có nước ở dạng lỏng trên bề mặt.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Sao Hỏa chỉ có băng hoặc nước ngầm."
+      },
+      {
+        "question": "Kính hiển vi điện tử có độ phóng đại lớn hơn kính hiển vi quang học.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Kính hiển vi điện tử có độ phóng đại lớn hơn kính hiển vi quang học."
+      },
+      {
+        "question": "Trọng lực trên Mặt Trăng lớn hơn Trái Đất.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Trọng lực trên Mặt Trăng nhỏ hơn Trái Đất."
+      },
+      {
+        "question": "Tất cả vi khuẩn đều có hại cho con người.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Có cả vi khuẩn có lợi cho con người."
+      },
+      {
+        "question": "Một năm ánh sáng là đơn vị đo thời gian.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Năm ánh sáng là đơn vị đo khoảng cách."
+      },
+      {
+        "question": "DNA chứa thông tin di truyền của sinh vật.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "DNA chứa thông tin di truyền của sinh vật."
+      },
+      {
+        "question": "Dầu nổi trên nước vì khối lượng riêng của nó nhỏ hơn nước.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Dầu nổi trên nước vì khối lượng riêng của nó nhỏ hơn nước."
+      },
+      {
+        "question": "Tàu vũ trụ có thể bay nhanh hơn ánh sáng.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Khoa Học và Công nghệ",
+        "explanation": "Theo vật lý hiện tại, tàu vũ trụ không thể bay nhanh hơn ánh sáng."
+      },
+      {
+        "question": "Châu Á là châu lục lớn nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Châu Á là châu lục lớn nhất thế giới."
+      },
+      {
+        "question": "Sông Amazon là con sông dài nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Sông Nile là con sông dài nhất thế giới."
+      },
+      {
+        "question": "Việt Nam có đường biên giới giáp với 4 nước.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Việt Nam giáp 3 nước: Trung Quốc, Lào, Campuchia."
+      },
+      {
+        "question": "Australia là quốc gia duy nhất chiếm toàn bộ một lục địa.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Australia là quốc gia duy nhất chiếm toàn bộ một lục địa."
+      },
+      {
+        "question": "Đại Tây Dương là đại dương lớn nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Thái Bình Dương là đại dương lớn nhất thế giới."
+      },
+      {
+        "question": "Rừng Amazon được gọi là 'lá phổi xanh' của Trái Đất.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Rừng Amazon được gọi là 'lá phổi xanh' của Trái Đất."
+      },
+      {
+        "question": "Everest là ngọn núi cao nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Everest là ngọn núi cao nhất thế giới."
+      },
+      {
+        "question": "Biến đổi khí hậu chỉ gây ảnh hưởng đến khu vực gần biển.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Biến đổi khí hậu ảnh hưởng toàn cầu."
+      },
+      {
+        "question": "Nhật Bản nằm trong khu vực 'Vành đai lửa Thái Bình Dương'.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Nhật Bản nằm trong khu vực 'Vành đai lửa Thái Bình Dương'."
+      },
+      {
+        "question": "Nhiệt độ cao nhất từng được ghi nhận trên Trái Đất vượt quá 60°C.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Nhiệt độ cao nhất từng được ghi nhận trên Trái Đất vượt quá 60°C."
+      },
+      {
+        "question": "Nam Cực có dân số thường trú cao hơn Bắc Cực.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Nam Cực không có cư dân thường trú."
+      },
+      {
+        "question": "Mực nước biển đang tăng do băng tan ở hai cực.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Mực nước biển đang tăng do băng tan ở hai cực."
+      },
+      {
+        "question": "Chỉ có con người mới gây ra ô nhiễm môi trường.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Tự nhiên cũng có thể gây ô nhiễm môi trường."
+      },
+      {
+        "question": "Hồ Baikal là hồ nước ngọt sâu nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Hồ Baikal là hồ nước ngọt sâu nhất thế giới."
+      },
+      {
+        "question": "Đại dương chứa khoảng 70% lượng nước trên Trái Đất.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Đại dương chứa khoảng 97% lượng nước trên Trái Đất."
+      },
+      {
+        "question": "Động đất chỉ xảy ra ở những khu vực gần núi lửa.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Động đất xảy ra ở cả nơi có đứt gãy địa chất."
+      },
+      {
+        "question": "Sahara là sa mạc lớn nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Sahara là sa mạc lớn nhất thế giới."
+      },
+      {
+        "question": "Biển Đen có màu đen do thành phần nước đặc biệt.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Tên gọi Biển Đen không liên quan đến màu nước."
+      },
+      {
+        "question": "Rừng nhiệt đới có vai trò quan trọng trong việc hấp thụ CO2.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Địa lý và Môi trường",
+        "explanation": "Rừng nhiệt đới có vai trò quan trọng trong việc hấp thụ CO2."
+      },
+      {
+        "question": "Chiến tranh thế giới thứ hai kết thúc vào năm 1945.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Chiến tranh thế giới thứ hai kết thúc vào năm 1945."
+      },
+      {
+        "question": "Kim tự tháp Ai Cập được xây dựng cách đây khoảng 1.000 năm.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Kim tự tháp Ai Cập được xây dựng cách đây hơn 4.500 năm."
+      },
+      {
+        "question": "Vạn Lý Trường Thành được xây dựng để chống lại sự xâm lược từ phương Tây.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Vạn Lý Trường Thành được xây dựng để chống lại sự xâm lược từ Mông Cổ và các bộ tộc phía Bắc."
+      },
+      {
+        "question": "Shakespeare là nhà văn nổi tiếng của Pháp.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Shakespeare là nhà văn nổi tiếng của Anh."
+      },
+      {
+        "question": "Cách mạng Pháp diễn ra vào thế kỷ 18.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Cách mạng Pháp diễn ra vào thế kỷ 18."
+      },
+      {
+        "question": "Napoleon là hoàng đế của nước Đức.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Napoleon là hoàng đế của Pháp."
+      },
+      {
+        "question": "Việt Nam từng là thuộc địa của Pháp.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Việt Nam từng là thuộc địa của Pháp."
+      },
+      {
+        "question": "Olympic cổ đại bắt nguồn từ Hy Lạp.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Olympic cổ đại bắt nguồn từ Hy Lạp."
+      },
+      {
+        "question": "Tiếng Anh là ngôn ngữ có nhiều người nói bản ngữ nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Tiếng Trung Quốc là ngôn ngữ có nhiều người nói bản ngữ nhất thế giới."
+      },
+      {
+        "question": "Cấm vận thương mại đã khiến nền kinh tế Cuba suy yếu trong thế kỷ 20.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Cấm vận thương mại đã khiến nền kinh tế Cuba suy yếu trong thế kỷ 20."
+      },
+      {
+        "question": "Hội họa thời Phục Hưng có ảnh hưởng lớn đến nghệ thuật hiện đại.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Hội họa thời Phục Hưng có ảnh hưởng lớn đến nghệ thuật hiện đại."
+      },
+      {
+        "question": "Internet được phát minh vào thế kỷ 19.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Internet được phát minh vào thế kỷ 20."
+      },
+      {
+        "question": "Cờ vua có nguồn gốc từ Trung Quốc.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Cờ vua có nguồn gốc từ Ấn Độ."
+      },
+      {
+        "question": "Đế chế La Mã sụp đổ vào thế kỷ 5.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Đế chế La Mã sụp đổ vào thế kỷ 5."
+      },
+      {
+        "question": "Nhà Nguyễn là triều đại phong kiến cuối cùng của Việt Nam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Nhà Nguyễn là triều đại phong kiến cuối cùng của Việt Nam."
+      },
+      {
+        "question": "Mỹ là quốc gia đầu tiên phóng vệ tinh nhân tạo vào vũ trụ.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Liên Xô là quốc gia đầu tiên phóng vệ tinh nhân tạo vào vũ trụ (Sputnik 1)."
+      },
+      {
+        "question": "Nữ hoàng Elizabeth I là người trị vì lâu nhất trong lịch sử Anh.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Nữ hoàng Elizabeth II là người trị vì lâu nhất trong lịch sử Anh."
+      },
+      {
+        "question": "Xây dựng kim tự tháp là nhờ công nghệ hiện đại.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Xây dựng kim tự tháp là nhờ lao động thủ công."
+      },
+      {
+        "question": "Lịch sử loài người bắt đầu từ thời kỳ đồ sắt.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "Lịch sử loài người bắt đầu từ thời kỳ đồ đá."
+      },
+      {
+        "question": "UNESCO là tổ chức của Liên Hợp Quốc về giáo dục, khoa học và văn hóa.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Lịch sử và Văn hóa",
+        "explanation": "UNESCO là tổ chức của Liên Hợp Quốc về giáo dục, khoa học và văn hóa."
+      },
+      {
+        "question": "Bóng đá có nguồn gốc từ Anh.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Bóng đá có nguồn gốc từ Anh."
+      },
+      {
+        "question": "Michael Jordan là một huyền thoại bóng đá.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Michael Jordan là một huyền thoại bóng rổ."
+      },
+      {
+        "question": "Thế vận hội Olympic diễn ra bốn năm một lần.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Thế vận hội Olympic diễn ra bốn năm một lần."
+      },
+      {
+        "question": "Billiards là một môn thể thao dưới nước.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Billiards là một môn thể thao chơi trên bàn."
+      },
+      {
+        "question": "Lionel Messi đã từng chơi cho câu lạc bộ Real Madrid.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Lionel Messi đã từng chơi cho câu lạc bộ Barcelona và PSG."
+      },
+      {
+        "question": "Cờ vua là môn thể thao đòi hỏi thể lực cao.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Cờ vua là môn thể thao đòi hỏi trí tuệ cao."
+      },
+      {
+        "question": "Tay vợt nữ Serena Williams đã từng giành nhiều danh hiệu Grand Slam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Tay vợt nữ Serena Williams đã từng giành nhiều danh hiệu Grand Slam."
+      },
+      {
+        "question": "Môn điền kinh chỉ bao gồm chạy bộ.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Môn điền kinh bao gồm nhiều nội dung khác như nhảy cao, ném lao,..."
+      },
+      {
+        "question": "Điểm số cao nhất trong một trận bóng rổ NBA là hơn 100 điểm cho một đội.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Điểm số cao nhất trong một trận bóng rổ NBA là hơn 100 điểm cho một đội."
+      },
+      {
+        "question": "Võ sĩ quyền Anh nổi tiếng Muhammad Ali từng là vô địch thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Võ sĩ quyền Anh nổi tiếng Muhammad Ali từng là vô địch thế giới."
+      },
+      {
+        "question": "Giải đấu Wimbledon được tổ chức ở Pháp.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Giải đấu Wimbledon được tổ chức ở Anh."
+      },
+      {
+        "question": "Quần vợt là môn thể thao cá nhân, không có nội dung thi đấu đôi.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Quần vợt là môn thể thao cá nhân và có nội dung thi đấu đôi."
+      },
+      {
+        "question": "Chessboxing là một môn thể thao kết hợp cờ vua và boxing.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Chessboxing là một môn thể thao kết hợp cờ vua và boxing."
+      },
+      {
+        "question": "Bóng chày là môn thể thao phổ biến nhất thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Bóng đá là môn thể thao phổ biến nhất thế giới."
+      },
+      {
+        "question": "NBA là giải bóng rổ hàng đầu của Mỹ.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "NBA là giải bóng rổ hàng đầu của Mỹ."
+      },
+      {
+        "question": "Một trận bóng đá chuyên nghiệp kéo dài 60 phút.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Một trận bóng đá chuyên nghiệp kéo dài 90 phút."
+      },
+      {
+        "question": "FIFA World Cup chỉ dành cho các đội tuyển châu Âu.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Thể thao và Giải trí",
+        "explanation": "FIFA World Cup dành cho các đội tuyển trên toàn thế giới."
+      },
+      {
+        "question": "Đấu vật tự do là một môn thể thao Olympic.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Thể thao và Giải trí",
+        "explanation": "Đấu vật tự do là một môn thể thao Olympic."
+      },
+      {
+        "question": "Uống nhiều nước giúp cải thiện sức khỏe.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Uống nhiều nước giúp cải thiện sức khỏe."
+      },
+      {
+        "question": "Chỉ cần tập thể dục là có thể giảm cân mà không cần kiểm soát chế độ ăn.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Cần kết hợp cả tập thể dục và kiểm soát chế độ ăn để giảm cân."
+      },
+      {
+        "question": "Ngủ đủ giấc giúp tăng cường trí nhớ.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Ngủ đủ giấc giúp tăng cường trí nhớ."
+      },
+      {
+        "question": "Thịt đỏ không bao giờ gây hại cho sức khỏe.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Tiêu thụ quá nhiều thịt đỏ có thể gây hại cho sức khỏe."
+      },
+      {
+        "question": "Cà phê có thể giúp tỉnh táo nhưng không nên uống quá nhiều.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Cà phê có thể giúp tỉnh táo nhưng không nên uống quá nhiều."
+      },
+      {
+        "question": "Tất cả các loại vi khuẩn đều có hại.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Có cả vi khuẩn có lợi cho sức khỏe."
+      },
+      {
+        "question": "Đường ăn nhiều có thể dẫn đến bệnh tiểu đường.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Đường ăn nhiều có thể dẫn đến bệnh tiểu đường."
+      },
+      {
+        "question": "Tập yoga giúp giảm căng thẳng.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Tập yoga giúp giảm căng thẳng."
+      },
+      {
+        "question": "Hút thuốc lá không gây ung thư phổi.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Hút thuốc lá có nguy cơ cao gây ung thư phổi."
+      },
+      {
+        "question": "Béo phì chỉ do di truyền, không liên quan đến lối sống.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Lối sống có ảnh hưởng lớn đến béo phì."
+      },
+      {
+        "question": "Tia UV từ ánh nắng có thể gây ung thư da.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Tia UV từ ánh nắng có thể gây ung thư da."
+      },
+      {
+        "question": "Ăn nhiều trái cây và rau củ giúp cải thiện hệ miễn dịch.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Ăn nhiều trái cây và rau củ giúp cải thiện hệ miễn dịch."
+      },
+      {
+        "question": "Một ngày nên uống ít nhất 10 lít nước để tốt cho sức khỏe.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Uống quá nhiều nước có thể gây hại cho sức khỏe."
+      },
+      {
+        "question": "Rửa tay thường xuyên giúp phòng ngừa bệnh tật.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Rửa tay thường xuyên giúp phòng ngừa bệnh tật."
+      },
+      {
+        "question": "Căng thẳng kéo dài có thể ảnh hưởng đến sức khỏe tim mạch.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Căng thẳng kéo dài có thể ảnh hưởng đến sức khỏe tim mạch."
+      },
+      {
+        "question": "Chỉ tập thể dục vào buổi sáng mới có lợi.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Tập thể dục vào bất kỳ thời gian nào đều tốt."
+      },
+      {
+        "question": "Đường nhân tạo hoàn toàn vô hại với sức khỏe.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Một số loại đường nhân tạo có thể gây ảnh hưởng nếu dùng nhiều."
+      },
+      {
+        "question": "Người ăn chay không bao giờ bị thiếu chất.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Nếu không cân bằng dinh dưỡng, người ăn chay có thể bị thiếu chất."
+      },
+      {
+        "question": "Thiếu ngủ có thể làm giảm hiệu suất làm việc và học tập.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Sức khỏe và Đời sống",
+        "explanation": "Thiếu ngủ có thể làm giảm hiệu suất làm việc và học tập."
+      },
+      {
+        "question": "Việt Nam có 63 tỉnh thành.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Việt Nam có 63 tỉnh thành."
+      },
+      {
+        "question": "Sông Cửu Long chảy qua miền Bắc Việt Nam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Sông Cửu Long chảy qua miền Nam Việt Nam."
+      },
+      {
+        "question": "Hồ Gươm nằm ở TP. Hồ Chí Minh.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Hồ Gươm nằm ở Hà Nội."
+      },
+      {
+        "question": "Việt Nam từng là thuộc địa của Bồ Đào Nha.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Việt Nam từng là thuộc địa của Pháp."
+      },
+      {
+        "question": "Vịnh Hạ Long được UNESCO công nhận là Di sản Thiên nhiên Thế giới.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Vịnh Hạ Long được UNESCO công nhận là Di sản Thiên nhiên Thế giới."
+      },
+      {
+        "question": "Việt Nam có đường bờ biển dài hơn 3.000 km.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Việt Nam có đường bờ biển dài hơn 3.000 km."
+      },
+      {
+        "question": "Lễ hội Đền Hùng được tổ chức vào ngày 10/3 Âm lịch hàng năm.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Lễ hội Đền Hùng được tổ chức vào ngày 10/3 Âm lịch hàng năm."
+      },
+      {
+        "question": "Đinh Fansipan là đỉnh núi cao nhất Đông Nam Á.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Đinh Fansipan là đỉnh núi cao nhất Việt Nam, không phải Đông Nam Á."
+      },
+      {
+        "question": "Cố đô Huế từng là kinh đô của triều Nguyễn.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Cố đô Huế từng là kinh đô của triều Nguyễn."
+      },
+      {
+        "question": "Hồ Chí Minh từng là người sáng lập Đảng Cộng sản Việt Nam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Hồ Chí Minh từng là người sáng lập Đảng Cộng sản Việt Nam."
+      },
+      {
+        "question": "Văn Miếu - Quốc Tử Giám là trường đại học đầu tiên của Việt Nam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Văn Miếu - Quốc Tử Giám là trường đại học đầu tiên của Việt Nam."
+      },
+      {
+        "question": "Việt Nam có biên giới giáp với 4 nước.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Việt Nam có biên giới giáp với 3 nước: Trung Quốc, Lào, Campuchia."
+      },
+      {
+        "question": "Chợ Bến Thành là biểu tượng của TP. Hà Nội.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Chợ Bến Thành là biểu tượng của TP. Hồ Chí Minh."
+      },
+      {
+        "question": "Đồng bằng sông Hồng là vựa lúa lớn nhất Việt Nam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Đồng bằng sông Cửu Long là vựa lúa lớn nhất Việt Nam."
+      },
+      {
+        "question": "Tết Nguyên Đán là dịp lễ quan trọng nhất của người Việt.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Tết Nguyên Đán là dịp lễ quan trọng nhất của người Việt."
+      },
+      {
+        "question": "Truyện Kiều do Nguyễn Trãi sáng tác.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Truyện Kiều do Nguyễn Du sáng tác."
+      },
+      {
+        "question": "Quốc hoa của Việt Nam là hoa sen.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Quốc hoa của Việt Nam là hoa sen."
+      },
+      {
+        "question": "Cầu Rồng là một cây cầu nổi tiếng ở TP. Đà Nẵng.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Cầu Rồng là một cây cầu nổi tiếng ở TP. Đà Nẵng."
+      },
+      {
+        "question": "Hạ Long là thủ đô đầu tiên của Việt Nam.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 2,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Thủ đô đầu tiên của Việt Nam là Hoa Lư."
+      },
+      {
+        "question": "Bánh chưng và bánh tét là hai loại bánh truyền thống của người Việt trong dịp Tết.",
+        "yesOption": "Đúng",
+        "noOption": "Sai",
+        "correctOption": 1,
+        "category": "Việt Nam – Địa lý, Lịch sử và Văn hóa",
+        "explanation": "Bánh chưng và bánh tét là hai loại bánh truyền thống của người Việt trong dịp Tết."
+      }
+]
