@@ -132,6 +132,7 @@ const QAmonitor = ({ route }) => {
         numberofquestion: question.length,
         correct: correctScore + (selectedOption === correctAnswer ? 1 : 0), // CorrectScore đã được cập nhật ở trên
         wrong: wrongScore + (selectedOption !== correctAnswer ? 1 : 0), // WrongScore đã được cập nhật ở trên
+        questions: question,
       });
     } else {
       // Nếu không phải câu cuối cùng, chuyển sang câu tiếp theo
@@ -213,8 +214,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   contentBox: {
-    width: "100%",
-    height: "92%",
+    width: "95%",
+    height: "90%",
     backgroundColor: "#fff",
     borderRadius: 30,
     padding: 20,

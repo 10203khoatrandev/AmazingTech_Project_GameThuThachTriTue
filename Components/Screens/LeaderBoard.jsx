@@ -9,9 +9,8 @@ const LeaderBoard = () => {
     };
     return (
         <View style={{ flex: 1, backgroundColor: '#6a5adf', padding: 25 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image source={require('../Images/Back.png')} style={{ width: 40, height: 40 }} />
-                <Text style={{ color: '#fff', fontSize: 24, marginLeft: 60 }}>Leaderboard</Text>
+            <View style={{alignItems: 'center', marginTop: 50 }}>
+                <Text style={{ color: '#fff', fontSize: 24, marginBottom: 30}}>Leaderboard</Text>
             </View>
             <View style={styles.container}>
                 <TouchableOpacity
@@ -42,7 +41,7 @@ const LeaderBoard = () => {
               
                 <Image source={require('../Images/BXH.png')} />
             </View>
-            <View style={{borderRadius:25, height:200, width:'100%', backgroundColor:'#E6e6e6', position:'absolute', top: 500, left:25}}>
+            <View style={{borderRadius:25, height:280, width:'100%', backgroundColor:'#E6e6e6', position:'absolute', top: 550, left:25}}>
 
             </View>
         </View>

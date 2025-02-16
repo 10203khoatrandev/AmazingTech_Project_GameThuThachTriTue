@@ -1,10 +1,18 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 const Result = ({ route }) => {
   const navigation = useNavigation();
-  const { answered, skipped, numberofquestion, correct, wrong } = route.params;
+  const { answered, skipped, numberofquestion, correct, wrong, questions } =
+    route.params;
+
+  const handleReplay = () => {
+    navigation.navigate("QAmonitor", {
+      replay: true,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.contentBox}>
@@ -17,7 +25,9 @@ const Result = ({ route }) => {
           </TouchableOpacity>
           <View style={styles.scoreBox}>
             <Text style={styles.scoreLabel}>Tổng Điểm</Text>
-            <Text style={styles.scoreText}>{correct / numberofquestion * 100} điểm</Text>
+            <Text style={styles.scoreText}>
+              {(correct / numberofquestion) * 100} điểm
+            </Text>
           </View>
         </View>
         <View style={styles.resultBox}>
@@ -39,7 +49,7 @@ const Result = ({ route }) => {
                   fontWeight: "600",
                 }}
               >
-                {answered / numberofquestion * 100}%
+                {(answered / numberofquestion) * 100}%
               </Text>
             </View>
 
@@ -149,7 +159,14 @@ const Result = ({ route }) => {
           </View>
         </View>
         <View style={styles.horzontalLine}>
-          <TouchableOpacity style={styles.itemBox}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("DetailAnswer", {
+                questionData: questions,
+              })
+            }
+            style={styles.itemBox}
+          >
             <Image source={require("../Images/review.png")} />
             <Text style={styles.itemText}>Xem đáp án</Text>
           </TouchableOpacity>
@@ -157,7 +174,10 @@ const Result = ({ route }) => {
             <Image source={require("../Images/savepoint.png")} />
             <Text style={styles.itemText}>Lưu điểm</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.itemBox}>
+          <TouchableOpacity
+            onPress={() => handleReplay()}
+            style={styles.itemBox}
+          >
             <Image source={require("../Images/retry.png")} />
             <Text style={styles.itemText}>Chơi lại</Text>
           </TouchableOpacity>
@@ -167,7 +187,9 @@ const Result = ({ route }) => {
             <Image source={require("../Images/opposite.png")} />
             <Text style={styles.itemText}>Xem đối thủ</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.itemBox}>
+          <TouchableOpacity 
+          onPress={() => navigation.navigate("Home")}
+          style={styles.itemBox}>
             <Image source={require("../Images/home.png")} />
             <Text style={styles.itemText}>Trang chủ</Text>
           </TouchableOpacity>

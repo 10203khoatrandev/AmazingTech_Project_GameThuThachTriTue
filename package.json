@@ -9,16 +9,23 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-firebase/auth": "^21.10.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
+    "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
+    "bcryptjs": "^3.0.0",
     "expo": "~52.0.31",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.3.1",
     "firebase-admin": "^13.1.0",
+    "node-libs-react-native": "^1.2.1",
     "react": "18.3.1",
     "react-native": "0.76.7",
+    "react-native-bcrypt": "^2.4.0",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-randombytes": "^3.6.1",
     "react-native-safe-area-context": "^5.2.0"
   },
   "devDependencies": {

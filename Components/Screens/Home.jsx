@@ -8,10 +8,49 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { db } from "../config";
+import { collection, getDocs, query, where } from "firebase/firestore";
 const Home = () => {
+  const [question, setQuestion] = useState([]);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    getCategory();
+    console.log(question);
+  }, []);
+
+  const getCategory = async () => {
+    if (loaded) return;
+    const q = query(collection(db, "questions"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setQuestion((prev) => [...prev, doc.data()]);
+    });
+    setLoaded(true);
+  };
+
+  //lấy data Khoa học
+  const ScienceData = question.filter(
+    (item) => item.category === "Khoa Học và Công nghệ"
+  );
+  const scienceName = ScienceData.map((item) => item.category).slice(0,1);
+
+  //lấy data Địa lý
+  const geographyData = question.filter(
+    (item) => item.category === "Địa lý và Môi trường"
+  );
+  const geoName = geographyData.map((item) => item.category).slice(0,1);
+
+  //Lấy data Giải trí
+  const sportData = question.filter(
+    (item) => item.category === "Thể thao và Giải trí"
+  );
+  const sportName = sportData.map((item) => item.category).slice(0,1);
+
   return (
     <ScrollView contentContainerStyle={[styles.container]}>
       <View style={styles.header}>
@@ -96,7 +135,10 @@ const Home = () => {
           <Text style={styles.challengeText}>
             Tham gia vào trò chơi với bạn bè hoặc người lạ
           </Text>
-          <TouchableOpacity style={styles.btnFindFriend}>
+          <TouchableOpacity
+            onPress={console.log(ScienceData)}
+            style={styles.btnFindFriend}
+          >
             <Image
               source={require("../Images/friend.png")}
               style={styles.friendIcon}
@@ -120,9 +162,14 @@ const Home = () => {
             <Text style={styles.seeAllText}>Xem tất cả</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-        onPress={() => navigation.navigate("QAmonitor", {category: "Khoa Học và Công nghệ"})} 
-        style={styles.quizBox}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("QAmonitor", {
+              category: "Khoa Học và Công nghệ",
+            })
+          }
+          style={styles.quizBox}
+        >
           <View style={styles.quizImg}>
             <Image
               style={{ width: 45, height: 45 }}
@@ -137,7 +184,7 @@ const Home = () => {
                 fontWeight: "bold",
               }}
             >
-              Khoa học & Công nghệ
+              {scienceName}
             </Text>
             <Text
               style={{
@@ -145,7 +192,7 @@ const Home = () => {
                 color: "#858494",
               }}
             >
-              Khoa học & Công nghệ • 20 câu hỏi
+              {scienceName} • {ScienceData.length} câu hỏi
             </Text>
           </View>
           <View style={{ justifyContent: "center", marginRight: 10 }}>
@@ -155,9 +202,14 @@ const Home = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity 
-        onPress={() => navigation.navigate("QAmonitor", {category: "Địa lý và Môi trường"})}
-        style={styles.quizBox}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("QAmonitor", {
+              category: "Địa lý và Môi trường",
+            })
+          }
+          style={styles.quizBox}
+        >
           <View style={styles.quizImg}>
             <Image
               style={{ width: 45, height: 45 }}
@@ -172,7 +224,7 @@ const Home = () => {
                 fontWeight: "bold",
               }}
             >
-              Địa lý & Môi trường
+              {geoName}
             </Text>
             <Text
               style={{
@@ -180,7 +232,7 @@ const Home = () => {
                 color: "#858494",
               }}
             >
-              Địa lý & Môi trường • 20 câu hỏi
+              {geoName} • {geographyData.length} câu hỏi
             </Text>
           </View>
           <View style={{ justifyContent: "center", marginRight: 10 }}>
@@ -190,9 +242,14 @@ const Home = () => {
             />
           </View>
         </TouchableOpacity>
-        <TouchableOpacity 
-        onPress={() => navigation.navigate("QAmonitor", {category: "Thể thao và Giải trí"})}
-        style={styles.quizBox}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("QAmonitor", {
+              category: "Thể thao và Giải trí",
+            })
+          }
+          style={styles.quizBox}
+        >
           <View style={styles.quizImg}>
             <Image
               style={{ width: 45, height: 45 }}
@@ -207,7 +264,7 @@ const Home = () => {
                 fontWeight: "bold",
               }}
             >
-              Thể thao & Giải trí
+              {sportName}
             </Text>
             <Text
               style={{
@@ -215,7 +272,7 @@ const Home = () => {
                 color: "#858494",
               }}
             >
-              Thể thao & Giải trí • 20 câu hỏi
+              {sportName} • {sportData.length} câu hỏi
             </Text>
           </View>
           <View style={{ justifyContent: "center", marginRight: 10 }}>
