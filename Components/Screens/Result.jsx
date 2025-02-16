@@ -1,12 +1,15 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 
-const Result = () => {
+const Result = ({ route }) => {
+  const navigation = useNavigation();
+  const { answered, skipped, numberofquestion, correct, wrong } = route.params;
   return (
     <View style={styles.container}>
       <View style={styles.contentBox}>
         <View style={styles.maskBox}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
               style={{ margin: 20, tintColor: "#fff", width: 25, height: 25 }}
               source={require("../Images/previous.png")}
@@ -14,7 +17,7 @@ const Result = () => {
           </TouchableOpacity>
           <View style={styles.scoreBox}>
             <Text style={styles.scoreLabel}>Tổng Điểm</Text>
-            <Text style={styles.scoreText}>75 điểm</Text>
+            <Text style={styles.scoreText}>{correct / numberofquestion * 100} điểm</Text>
           </View>
         </View>
         <View style={styles.resultBox}>
@@ -36,7 +39,7 @@ const Result = () => {
                   fontWeight: "600",
                 }}
               >
-                100%
+                {answered / numberofquestion * 100}%
               </Text>
             </View>
 
@@ -57,7 +60,7 @@ const Result = () => {
                   fontWeight: "600",
                 }}
               >
-                10
+                {numberofquestion}
               </Text>
             </View>
           </View>
@@ -99,7 +102,7 @@ const Result = () => {
                   fontWeight: "600",
                 }}
               >
-                15
+                {correct}
               </Text>
             </View>
 
@@ -120,7 +123,7 @@ const Result = () => {
                   fontWeight: "600",
                 }}
               >
-                5
+                {wrong}
               </Text>
             </View>
           </View>
@@ -189,9 +192,10 @@ const styles = StyleSheet.create({
   },
   contentBox: {
     width: "90%",
-    height: "95%",
+    height: "90%",
     backgroundColor: "#fff",
     borderRadius: 30,
+    marginTop: 40,
   },
   maskBox: {
     width: "100%",
@@ -256,16 +260,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#A42FC1",
   },
-  itemBox:{
-    gap:10,
-    flexDirection:'column',
-    alignItems:'center',
-    justifyContent:'center'
+  itemBox: {
+    gap: 10,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  itemText:{
+  itemText: {
     fontSize: 15,
-    fontWeight:'500',
-    color:'#2B262D',
-    textAlign: 'center'
-  }
+    fontWeight: "500",
+    color: "#2B262D",
+    textAlign: "center",
+  },
 });
