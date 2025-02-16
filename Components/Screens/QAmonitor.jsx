@@ -16,15 +16,39 @@ const QAmonitor = ({ route }) => {
   const [question, setQuestion] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState({});
-  const [score, setScore] = useState(0);
+  const [correctScore, setCorrectScore] = useState(0);
+  const [wrongScore, setWrongScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [timer, setTimer] = useState(null);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [skippedCount, setSkippedCount] = useState(0);
 
   const navigation = useNavigation();
   const { category } = route.params;
 
   useEffect(() => {
+    let currentTimer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+    setTimer(currentTimer);
+
+    return () => clearInterval(currentTimer);
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft === 0) {
+      console.log("Hết thời gian!");
+      setSkippedCount(skippedCount + 1);
+      handleNextQuestion();
+      setTimeLeft(15);
+    }
+  }, [timeLeft]);
+
+  useEffect(() => {
     getQuestions(category);
+    console.log(question);
   }, [category]);
 
   const getQuestions = async (currentCategory) => {
@@ -67,92 +91,114 @@ const QAmonitor = ({ route }) => {
   };
 
   const currentQuestion = question[questionIndex];
-  
+
   const handleNextQuestion = () => {
-    setQuestionIndex((prevIndex) => prevIndex + 1);
+    if (questionIndex < question.length - 1) {
+      setQuestionIndex(questionIndex + 1);
+    } else {
+      console.log("Đã hết câu hỏi!");
+      navigation.navigate("Result", {
+        answered: answeredCount + 1, //cộng thêm 1 cho câu hỏi cuối
+        skipped: skippedCount,
+        numberofquestion: question.length,
+        correct: correctScore,
+        wrong: wrongScore,
+      });
+    }
   };
 
-  const handleOptionSelected = (questionIndex, option) => {
-    setSelectedOption({
-      ...selectedOption,
-      [questionIndex]: option,
-    });
-  };
+  const handleOptionSelected = (selectedOption) => {
+    clearInterval(timer);
+    setTimeLeft(15);
 
-  const handleSubmit = () => {
-    let correctAnswers = 0;
-    question.forEach((question, index) => {
-      if (selectedOption[index] === question.correctOption) {
-        correctAnswers++;
-      }
-    });
-    setScore(correctAnswers);
-    setShowResult(true);
+    const currentQuestion = question[questionIndex];
+
+    const correctAnswer = currentQuestion.correctOption;
+    const isLastQuestion = questionIndex === question.length - 1;
+
+    if (selectedOption === correctAnswer) {
+      setCorrectScore((prevScore) => prevScore + 1); // Sử dụng callback để đảm bảo cập nhật đúng giá trị
+    } else {
+      setWrongScore((prevScore) => prevScore + 1); // Sử dụng callback để đảm bảo cập nhật đúng giá trị
+    }
+
+    setAnsweredCount((prevCount) => prevCount + 1);
+
+    // Chuyển sang màn hình kết quả *chỉ khi* là câu hỏi cuối cùng
+    if (isLastQuestion) {
+      navigation.navigate("Result", {
+        answered: answeredCount + 1,
+        skipped: skippedCount,
+        numberofquestion: question.length,
+        correct: correctScore + (selectedOption === correctAnswer ? 1 : 0), // CorrectScore đã được cập nhật ở trên
+        wrong: wrongScore + (selectedOption !== correctAnswer ? 1 : 0), // WrongScore đã được cập nhật ở trên
+      });
+    } else {
+      // Nếu không phải câu cuối cùng, chuyển sang câu tiếp theo
+      setQuestionIndex((prevIndex) => prevIndex + 1);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <FlatList
-        contentContainerStyle={{ flex: 1 }}
-        data={question.slice(0, 1)}
-        bounces={false}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View style={styles.contentBox}>
-            <View style={styles.maskBox}>
-              <View
-                style={{
-                  width: "90%",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginTop: 20,
-                }}
-              >
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Image
-                    style={{ tintColor: "#fff" }}
-                    source={require("../Images/previous.png")}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Image
-                    style={{ tintColor: "#fff" }}
-                    source={require("../Images/warning.png")}
-                  />
-                </TouchableOpacity>
-              </View>
+      {currentQuestion && (
+        <View style={styles.contentBox}>
+          <View style={styles.maskBox}>
+            <View
+              style={{
+                width: "90%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginTop: 20,
+              }}
+            >
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Image
+                  style={{ tintColor: "#fff" }}
+                  source={require("../Images/previous.png")}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Image
+                  style={{ tintColor: "#fff" }}
+                  source={require("../Images/warning.png")}
+                />
+              </TouchableOpacity>
             </View>
-            <View style={styles.questionBox}>
-              <View style={styles.headerLine}>
-                <View style={styles.answerCheckbox}>
-                  <Text style={styles.correctText}>01</Text>
-                  <Text style={styles.correctText}>Đúng</Text>
-                </View>
-                <View style={styles.timeCounter}>
-                  <Text style={styles.countdownTime}>15</Text>
-                </View>
-                <View style={styles.answerCheckbox}>
-                  <Text style={styles.incorrectText}>01</Text>
-                  <Text style={styles.incorrectText}>Sai</Text>
-                </View>
-              </View>
-              <Text style={styles.questionText}>
-                Câu hỏi số {index + 1} / {question.length}{" "}
-              </Text>
-              <Text style={styles.questionText2}>{item.question}</Text>
-            </View>
-            <TouchableOpacity 
-            style={[styles.answerBox,
-              selectedOption[index] === 1 && styles.selectedOption]
-            }>
-              <Text style={styles.answerText}>{item.yesOption}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.answerBox}>
-              <Text style={styles.answerText}>{item.noOption}</Text>
-            </TouchableOpacity>
           </View>
-        )}
-      />
+          <View style={styles.questionBox}>
+            <View style={styles.headerLine}>
+              <View style={styles.answerCheckbox}>
+                <Text style={styles.correctText}>{correctScore}</Text>
+                <Text style={styles.correctText}>Đúng</Text>
+              </View>
+              <View style={styles.timeCounter}>
+                <Text style={styles.countdownTime}>{timeLeft}</Text>
+              </View>
+              <View style={styles.answerCheckbox}>
+                <Text style={styles.incorrectText}>{wrongScore}</Text>
+                <Text style={styles.incorrectText}>Sai</Text>
+              </View>
+            </View>
+            <Text style={styles.questionText}>
+              Câu hỏi số {questionIndex + 1} / {question.length}
+            </Text>
+            <Text style={styles.questionText2}>{currentQuestion.question}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => handleOptionSelected(1)}
+            style={styles.answerBox}
+          >
+            <Text style={styles.answerText}>{currentQuestion.yesOption}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleOptionSelected(2)}
+            style={styles.answerBox}
+          >
+            <Text style={styles.answerText}>{currentQuestion.noOption}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 };
