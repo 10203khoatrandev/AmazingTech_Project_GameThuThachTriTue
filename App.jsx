@@ -8,7 +8,7 @@ export default function App() {
     <SafeAreaView style={styles.container}>
      {/* <LeaderBoard/> */}
      <ProfileScreen/>
-    //  <Home/>
+  
     </SafeAreaView>
   );
 }

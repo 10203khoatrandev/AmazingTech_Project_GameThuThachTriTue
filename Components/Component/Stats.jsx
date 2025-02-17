@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from "react-native";
-import { PieChart, BarChart } from "react-native-chart-kit";
+import { ProgressChart, BarChart } from "react-native-chart-kit";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
 const screenWidth = Dimensions.get("window").width;
@@ -8,29 +8,11 @@ const screenWidth = Dimensions.get("window").width;
 const StatsComponent = () => {
     const totalQuizzes = 50;
     const playedQuizzes = 37;
-    const remainingQuizzes = totalQuizzes - playedQuizzes;
+    const progress = playedQuizzes / totalQuizzes;
+
     const maxValue = 8;
     const data = [3, 8, 6];
-
-    // Chuyển dữ liệu về %
-    const percentageData = data.map((value) => (value / maxValue) * 100);
-
-    const pieData = [
-        {
-            name: "Played",
-            population: playedQuizzes,
-            color: "#6C4AB6",
-            legendFontColor: "#6C4AB6",
-            legendFontSize: 14,
-        },
-        {
-            name: "Remaining",
-            population: remainingQuizzes,
-            color: "#EEE",
-            legendFontColor: "#777",
-            legendFontSize: 14,
-        },
-    ];
+    const percentageData = data.map((value) => value / maxValue);
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -43,39 +25,43 @@ const StatsComponent = () => {
                 You have played a total <Text style={styles.highlightText}>24 quizzes</Text> this month!
             </Text>
 
-            {/* Biểu đồ PieChart */}
+            {/* Biểu đồ ProgressChart */}
             <View style={styles.progressContainer}>
-                <PieChart
-                    data={pieData}
-                    width={screenWidth - 40}
-                    height={150}
+                <ProgressChart
+                    data={{ data: [progress] }}
+                    width={screenWidth - 50} // Tăng kích thước nếu cần
+                    height={200}
+                    strokeWidth={12} // Độ dày viền tròn
+                    radius={70} // Bán kính vòng tròn
                     chartConfig={{
-                        backgroundColor: "#fff",
                         backgroundGradientFrom: "#fff",
                         backgroundGradientTo: "#fff",
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        color: (opacity = 1) => `rgba(106, 90, 224, ${opacity})`, 
+                        labelColor: () => "#6A5AE0",
                     }}
-                    accessor="population"
-                    backgroundColor="transparent"
-                    paddingLeft="15"
-                    absolute
+                    hideLegend={true}
                 />
+
+                <View style={styles.progressTextContainer}>
+                    <Text style={styles.progressText}>{playedQuizzes}/{totalQuizzes} quizzes</Text>
+                </View>
             </View>
 
             {/* Quiz Created & Quiz Won */}
             <View style={styles.statsRow}>
                 <TouchableOpacity style={styles.statBox}>
+                    <Icon name="pen" size={20} color="black" style={styles.iconTopRight} />
                     <Text style={styles.statNumber}>5</Text>
                     <Text style={styles.statLabel}>Quiz Created</Text>
-                    <Icon name="pen" size={16} color="black" />
                 </TouchableOpacity>
 
                 <TouchableOpacity style={[styles.statBox, styles.statBoxPurple]}>
-                    <Text style={styles.statNumber}>21</Text>
-                    <Text style={styles.statLabel}>Quiz Won</Text>
-                    <Icon name="trophy" size={16} color="white" />
+                    <Icon name="trophy" size={20} color="white" style={styles.iconTopRight} />
+                    <Text style={styles.statNumberWon}>21</Text>
+                    <Text style={styles.statLabelWon}>Quiz Won</Text>
                 </TouchableOpacity>
             </View>
+
 
             {/* Biểu đồ BarChart */}
             <View style={styles.chartContainer}>
@@ -87,25 +73,24 @@ const StatsComponent = () => {
                     }}
                     width={screenWidth - 40}
                     height={250}
-                    fromZero={true} // Cột bắt đầu từ 0
+                    fromZero={true}
                     chartConfig={{
                         backgroundGradientFrom: "#6A5AE0",
                         backgroundGradientTo: "#6A5AE0",
-                        color: () => `#fff`,
-                        labelColor: () => `#fff`,
-                        barPercentage: 1, // Điều chỉnh độ rộng cột
-                        decimalPlaces: 0, // Không hiển thị số lẻ
+                        color: () => "#fff",
+                        labelColor: () => "#fff",
+                        barPercentage: 1,
+                        decimalPlaces: 0,
                         barBorderRadius: 5,
                         propsForBackgroundLines: {
-                            strokeDasharray: [10, 10], // Đoạn đầu (gần số) bị ẩn, đoạn sau vẫn hiển thị
+                            strokeDasharray: [10, 10],
                             strokeWidth: 1,
-                            stroke: "#ffffff50", // Màu nhẹ để không quá nổi bật
+                            stroke: "#ffffff50",
                         },
-
                     }}
-                    yAxisLabel="" // Không có tiền tố
-                    yAxisSuffix="%" // Thêm ký hiệu % vào trục Y
-                    showValuesOnTopOfBars={true} // Hiển thị giá trị trên cột
+                    yAxisLabel=""
+                    yAxisSuffix="%"
+                    showValuesOnTopOfBars={true}
                     verticalLabelRotation={0}
                     style={styles.chart}
                 />
@@ -119,7 +104,7 @@ export default StatsComponent;
 const styles = StyleSheet.create({
     scrollContent: {
         minHeight: Dimensions.get("window").height + 200,
-        paddingBottom: 40, 
+        paddingBottom: 40,
     },
     header: {
         flexDirection: "row",
@@ -130,7 +115,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#6C4AB6",
+        color: "#6A5AE0",
     },
     subtitle: {
         fontSize: 16,
@@ -139,12 +124,23 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     highlightText: {
-        color: "#6C4AB6",
+        color: "#6A5AE0",
     },
     progressContainer: {
         alignItems: "center",
         justifyContent: "center",
         marginBottom: 20,
+        position: "relative",
+    },
+    progressTextContainer: {
+        position: "absolute",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    progressText: {
+        fontSize: 16,
+        color: "#6A5AE0",
+        fontWeight: "bold",
     },
     statsRow: {
         flexDirection: "row",
@@ -156,7 +152,6 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 10,
         padding: 20,
-        alignItems: "center",
         justifyContent: "center",
         marginHorizontal: 5,
         shadowColor: "#000",
@@ -165,16 +160,26 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     statBoxPurple: {
-        backgroundColor: "#6C4AB6",
+        backgroundColor: "#6A5AE0",
     },
     statNumber: {
-        fontSize: 24,
+        fontSize: 30,
         fontWeight: "bold",
         color: "black",
     },
     statLabel: {
-        fontSize: 12,
+        fontSize: 16,
         color: "#777",
+        marginVertical: 5,
+    },
+    statNumberWon: {
+        fontSize: 30,
+        fontWeight: "bold",
+        color: "white",
+    },
+    statLabelWon: {
+        fontSize: 16,
+        color: "white",
         marginVertical: 5,
     },
     chartContainer: {
@@ -190,5 +195,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         marginBottom: 10,
+    },
+    iconTopRight: {
+        position: "absolute",
+        top: 20,
+        right: 20,
     },
 });
