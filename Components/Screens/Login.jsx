@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Custominput from "../custom/Custominput";
 import ButtonCustom from "../custom/ButtonCustom";
 import Thanhngang from "../custom/Thanhngang";
@@ -23,6 +23,28 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [isEntry, setIsEntry] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    getUsers();
+  }, [users]);
+  
+  const getUsers = async () => {
+    try {
+      const usersData = await getDocs(collection(db, "users"));
+      setUsers(usersData.docs.map((doc) => ({
+        ...doc.data(), id: doc.id
+      })));
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const onPressTest = () => {
+    console.log(users);
+  }
+
 
   const onLogin = async (email, password) => {
     if (!email || !password) {
@@ -35,31 +57,13 @@ const Login = () => {
       return;
     }
 
-    // Truy vấn Firestore
-    const q = query(collection(db, "users"), where("email", "==", email));
-
-    try {
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        Alert.alert("Email không tồn tại.");
-        return;
-      }
-
-      querySnapshot.forEach((doc) => {
-        const user = doc.data();
-
-        // So sánh mật khẩu
-        if (user.password === password) {
-          // Đăng nhập thành công, chuyển sang màn hình Home
-          navigation.navigate("Home");
-        } else {
-          alert("Mật khẩu không đúng.");
-        }
-      });
-    } catch (error) {
-      console.error("Lỗi đăng nhập:", error);
-      alert("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+    const user = users.find((user) => user.email === email && user.password === password);
+    
+    if (user) {
+      Alert.alert("Thông báo", "Đăng nhập thành công!");
+      navigation.navigate("Home");
+    } else {
+      Alert.alert("Thông", "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại");
     }
   };
 
