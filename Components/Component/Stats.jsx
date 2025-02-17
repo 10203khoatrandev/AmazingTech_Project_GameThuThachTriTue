@@ -16,51 +16,57 @@ const StatsComponent = () => {
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Monthly</Text>
-                <Icon name="chevron-down" size={14} color="#6C4AB6" />
-            </View>
+            <View style={styles.statsContainer}>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.headerTitle}>
+                        <Text style={styles.title}>Monthly</Text>
+                        <Icon name="chevron-down" size={14} color="black" />
+                    </TouchableOpacity>
 
-            <Text style={styles.subtitle}>
-                You have played a total <Text style={styles.highlightText}>24 quizzes</Text> this month!
-            </Text>
+                </View>
 
-            {/* Biểu đồ ProgressChart */}
-            <View style={styles.progressContainer}>
-                <ProgressChart
-                    data={{ data: [progress] }}
-                    width={screenWidth - 50} // Tăng kích thước nếu cần
-                    height={200}
-                    strokeWidth={12} // Độ dày viền tròn
-                    radius={70} // Bán kính vòng tròn
-                    chartConfig={{
-                        backgroundGradientFrom: "#fff",
-                        backgroundGradientTo: "#fff",
-                        color: (opacity = 1) => `rgba(106, 90, 224, ${opacity})`, 
-                        labelColor: () => "#6A5AE0",
-                    }}
-                    hideLegend={true}
-                />
+                <Text style={styles.subtitle}>
+                    You have played a total <Text style={styles.highlightText}>24 quizzes</Text> this month!
+                </Text>
 
-                <View style={styles.progressTextContainer}>
-                    <Text style={styles.progressText}>{playedQuizzes}/{totalQuizzes} quizzes</Text>
+                {/* Biểu đồ ProgressChart */}
+                <View style={styles.progressContainer}>
+                    <ProgressChart
+                        data={{ data: [progress] }}
+                        width={screenWidth - 50} // Tăng kích thước nếu cần
+                        height={150}
+                        strokeWidth={12} // Độ dày viền tròn
+                        radius={70} // Bán kính vòng tròn
+                        chartConfig={{
+                            backgroundGradientFrom: "#D9D4F7",
+                            backgroundGradientTo: "#D9D4F7",
+                            color: (opacity = 1) => `rgba(106, 90, 224, ${opacity})`,
+                            labelColor: () => "#6A5AE0",
+                        }}
+                        hideLegend={true}
+                    />
+
+                    <View style={styles.progressTextContainer}>
+                        <Text style={styles.progressText}>{playedQuizzes}/{totalQuizzes} quizzes</Text>
+                    </View>
+                </View>
+                <View style={styles.statsRow}>
+                    <TouchableOpacity style={styles.statBox}>
+                        <Icon name="pen" size={20} color="black" style={styles.iconTopRight} />
+                        <Text style={styles.statNumber}>5</Text>
+                        <Text style={styles.statLabel}>Quiz Created</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.statBox, styles.statBoxPurple]}>
+                        <Icon name="trophy" size={20} color="white" style={styles.iconTopRight} />
+                        <Text style={styles.statNumberWon}>21</Text>
+                        <Text style={styles.statLabelWon}>Quiz Won</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            {/* Quiz Created & Quiz Won */}
-            <View style={styles.statsRow}>
-                <TouchableOpacity style={styles.statBox}>
-                    <Icon name="pen" size={20} color="black" style={styles.iconTopRight} />
-                    <Text style={styles.statNumber}>5</Text>
-                    <Text style={styles.statLabel}>Quiz Created</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity style={[styles.statBox, styles.statBoxPurple]}>
-                    <Icon name="trophy" size={20} color="white" style={styles.iconTopRight} />
-                    <Text style={styles.statNumberWon}>21</Text>
-                    <Text style={styles.statLabelWon}>Quiz Won</Text>
-                </TouchableOpacity>
-            </View>
+            {/* Quiz Created & Quiz Won */}
 
 
             {/* Biểu đồ BarChart */}
@@ -72,7 +78,7 @@ const StatsComponent = () => {
                         datasets: [{ data: percentageData }],
                     }}
                     width={screenWidth - 40}
-                    height={250}
+                    height={300}
                     fromZero={true}
                     chartConfig={{
                         backgroundGradientFrom: "#6A5AE0",
@@ -103,25 +109,30 @@ export default StatsComponent;
 
 const styles = StyleSheet.create({
     scrollContent: {
-        minHeight: Dimensions.get("window").height + 200,
+        minHeight: Dimensions.get("window").height + 250,
         paddingBottom: 40,
     },
     header: {
+        width: "100%",
         flexDirection: "row",
-        justifyContent: "space-between",
         alignItems: "center",
         marginBottom: 20,
+        justifyContent: "flex-end",
     },
     title: {
+        marginRight: 5,
         fontSize: 16,
         fontWeight: "bold",
-        color: "#6A5AE0",
+        color: "black",
     },
     subtitle: {
-        fontSize: 16,
-        fontWeight: "bold",
+        marginHorizontal: 50,
+        fontSize: 20,
+        fontWeight: "600",
         textAlign: "center",
         marginBottom: 20,
+        lineHeight:25,
+        letterSpacing: 0.5,
     },
     highlightText: {
         color: "#6A5AE0",
@@ -182,10 +193,20 @@ const styles = StyleSheet.create({
         color: "white",
         marginVertical: 5,
     },
+
+    statsContainer: {
+        width: "100%",
+        backgroundColor: "#D9D4F7",
+        borderRadius: 20,
+        padding: 15,
+      
+        alignItems: "center",
+    },
+
     chartContainer: {
         width: "100%",
         backgroundColor: "#6A5AE0",
-        borderRadius: 10,
+        borderRadius: 20,
         padding: 15,
         marginTop: 20,
         alignItems: "center",
@@ -201,4 +222,14 @@ const styles = StyleSheet.create({
         top: 20,
         right: 20,
     },
+    headerTitle: {
+        alignItems: "center",
+        width: 100,
+        height:40,
+        flexDirection: "row",
+        justifyContent: "center",
+        borderRadius: 10,
+        backgroundColor: "white"
+    },
+
 });

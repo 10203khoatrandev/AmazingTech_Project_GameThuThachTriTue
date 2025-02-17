@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         width: "100%",
-        paddingVertical: 10,
+     
     },
     tabContainer: {
         flex: 1,
@@ -227,6 +227,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
-        flexGrow: 1,
+        
     },
 });
