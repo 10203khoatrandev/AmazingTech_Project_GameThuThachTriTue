@@ -144,7 +144,7 @@ const Login = () => {
             justifyContent: "space-between",
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity onPress={signInWithGoogle}>
             <Image source={require("../Images/logoGoogle.png")}></Image>
           </TouchableOpacity>
           <TouchableOpacity
