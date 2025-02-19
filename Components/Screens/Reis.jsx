@@ -15,8 +15,10 @@ import Custminputpass2 from "../custom/Custminputpass2";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import Custminputpass from "../custom/Custminputpass";
-import { db } from "../config";
+import { db, auth } from "../config";
 import { collection, addDoc } from "firebase/firestore";
+import sha256 from 'js-sha256';
+import crypto from 'crypto-js';
 
 const Reis = () => {
   const navigation = useNavigation();
@@ -27,9 +29,54 @@ const Reis = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isEntry, setIsEntry] = useState(true);
 
-  // const onLogin = () => {
-  //   navigation.navigate("Home");
-  // };
+  const onPressConsole = () => {
+    const password = "khoa123";
+    const hashedPassword = hashPassword(password);
+    console.log(hashedPassword);
+  };
+
+  const hashPassword = (password) => {
+    return crypto.SHA256(password).toString();
+  }
+
+  const handleRegister = async() => {
+    try {
+      //Validate dữ liệu đầu vào người dùng
+      if (!username || !email || !password || !retypePassword) {
+        Alert.alert("Lỗi", "Vui lòng nhập đầy đủ!");
+        return;
+      }
+  
+      if (password !== retypePassword) {
+        Alert.alert("Lỗi", "Mật khẩu không trùng khớp!");
+        return;
+      }
+  
+      if(!isValidEmail(email)){
+        Alert.alert("Lỗi", "Email không hợp lệ!");
+        return;
+      }
+
+      // Tạo người dùng mới với email và password
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+
+      // Gửi email xác thực
+      await userCredential.user.sendEmailVerification();
+
+      // Lưu thông tin người dùng vào Firestore
+      await db.collection('users').doc(userCredential.user.uid).set({
+        name: username, 
+        email: email,
+        password: password,
+        point: 100,
+        userQuestions: []
+      });
+
+      Alert.alert('Thành công', 'Một email xác thực đã được gửi đến địa chỉ email của bạn.');
+    } catch (error) {
+      Alert.alert('Lỗi', "Tạo tài khoản không thành công. Vui lòng thử lại sau!");
+    }
+  }
 
   const onRegister = async() => {
     if (!username || !email || !password || !retypePassword) {
@@ -47,12 +94,15 @@ const Reis = () => {
       return;
     }
 
+    const hashedPassword = hashPassword(password);
+
     try {
       const docRef = await addDoc(collection(db, "users"), {
         name: username,
         email: email,
-        password: password, // Lưu mật khẩu đã hash
-        point: 100
+        password: hashedPassword, // Lưu mật khẩu đã hash
+        point: 100,
+        userQuestions: []
       });
   
       console.log("Document written with ID: ", docRef.id);

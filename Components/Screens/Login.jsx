@@ -16,9 +16,11 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../config";
 import { collection, getDocs, query } from "firebase/firestore";
+import crypto from "crypto-js";
 
-const Login = () => {
+const Login = ({ route }) => {
   const navigation = useNavigation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
@@ -29,22 +31,28 @@ const Login = () => {
   useEffect(() => {
     getUsers();
   }, [users]);
-  
+
+  const hashPassword = (password) => {
+    return crypto.SHA256(password).toString();
+  };
+
   const getUsers = async () => {
     try {
       const usersData = await getDocs(collection(db, "users"));
-      setUsers(usersData.docs.map((doc) => ({
-        ...doc.data(), id: doc.id
-      })));
+      setUsers(
+        usersData.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const onPressTest = () => {
     console.log(users);
-  }
-
+  };
 
   const onLogin = async (email, password) => {
     if (!email || !password) {
@@ -56,14 +64,19 @@ const Login = () => {
       Alert.alert("Lỗi", "Email không hợp lệ!");
       return;
     }
+    const hashedPassword = hashPassword(password);
 
-    const user = users.find((user) => user.email === email && user.password === password);
-    
+    const user = users.find(
+      (user) => user.email === email && user.password === hashedPassword
+    );
+
     if (user) {
-      Alert.alert("Thông báo", "Đăng nhập thành công!");
       navigation.navigate("Home");
     } else {
-      Alert.alert("Thông", "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại");
+      Alert.alert(
+        "Thông",
+        "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại"
+      );
     }
   };
 
@@ -75,6 +88,10 @@ const Login = () => {
   const handleLogin = () => {
     onLogin(email, password);
   };
+
+  const onpressConsole = () => {
+    console.log(users);
+  }
 
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
@@ -126,7 +143,7 @@ const Login = () => {
             <Image source={require("../Images/logoGoogle.png")}></Image>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => console.log(email + " : " + password)}
+            onPress={() => console.log(users[1])}
           >
             <Image source={require("../Images/logoFb.png")} />
           </TouchableOpacity>
