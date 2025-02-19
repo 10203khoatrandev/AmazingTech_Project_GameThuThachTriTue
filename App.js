@@ -13,6 +13,7 @@ import Login from "./Components/Screens/Login";
 import Reis from "./Components/Screens/Reis";
 import ProfileScreen from "./Components/Screens/Profile";
 import DiscoverScreen from "./Components/Screens/Discover";
+import Toast, { BaseToast } from "react-native-toast-message";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -94,8 +95,37 @@ export default function App() {
         <Stack.Screen name="Reis" component={Reis} />
         <Stack.Screen name="Home" component={HomeStack} />
       </Stack.Navigator>
+      <Toast config={toastConfig}/>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({});
+const toastConfig = {
+  error: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: "red", height: 80 }}
+      text1Style={{
+        fontSize: 25, // Cỡ chữ tiêu đề
+        fontWeight: "bold",
+      }}
+      text2Style={{
+        fontSize: 23, // Cỡ chữ nội dung
+      }}
+    />
+  ),
+  success: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: "green", height: 80 }}
+      text1Style={{
+        fontSize: 25, // Cỡ chữ tiêu đề
+        fontWeight: "bold",
+      }}
+      text2Style={{
+        fontSize: 23, // Cỡ chữ nội dung
+      }}
+    />
+  ),
+};
