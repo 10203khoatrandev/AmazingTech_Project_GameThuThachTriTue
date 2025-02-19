@@ -16,7 +16,12 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../config";
 import { collection, getDocs, query } from "firebase/firestore";
-
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+GoogleSignin.configure({
+  webClientId:
+    "985974012184-53m5ebiloi5l214t8b7rr6jmg788o3f5.apps.googleusercontent.com", // <--- Thay thế bằng Web Client ID của bạn
+});
 const Login = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState("");
@@ -74,6 +79,23 @@ const Login = () => {
 
   const handleLogin = () => {
     onLogin(email, password);
+  };
+  const signInWithGoogle = async () => {
+    try {
+      // 1. Đăng nhập Google
+      const { idToken } = await GoogleSignin.signIn();
+
+      // 2. Tạo credential Firebase từ Google ID token
+      const credential = auth.GoogleAuthProvider.credential(idToken);
+
+      // 3. Đăng nhập Firebase với credential
+      const userCredential = await auth().signInWithCredential(credential);
+
+      // 4. Lưu thông tin người dùng
+      setUser(userCredential.user);
+    } catch (error) {
+      console.error("Lỗi đăng nhập:", error);
+    }
   };
 
   return (
