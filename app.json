@@ -19,10 +19,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/Images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.anonymous.QuizApplication"
     },
     "web": {
       "favicon": "./assets/Images/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps._some_id_here_"
+        }
+      ]
+    ]
   }
 }

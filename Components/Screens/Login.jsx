@@ -18,7 +18,13 @@ import { db } from "../config";
 import { collection, getDocs, query } from "firebase/firestore";
 import crypto from "crypto-js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
+GoogleSignin.configure({
+  webClientId: "985974012184-53m5ebiloi5l214t8b7rr6jmg788o3f5.apps.googleusercontent.com", 
+  scopes: ["profile", "email"],
+});
 const Login = ({ route }) => {
   const navigation = useNavigation();
 
@@ -96,6 +102,17 @@ const Login = ({ route }) => {
   const onpressConsole = () => {
     console.log(users);
   };
+    const onGoogle = async () => {
+      await GoogleSignin.signOut();
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const googleSignInResult = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(
+        googleSignInResult.idToken
+      );
+    };
 
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
@@ -143,7 +160,7 @@ const Login = ({ route }) => {
             justifyContent: "space-between",
           }}
         >
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onGoogle}>
             <Image source={require("../Images/logoGoogle.png")}></Image>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => console.log(users[1])}>
