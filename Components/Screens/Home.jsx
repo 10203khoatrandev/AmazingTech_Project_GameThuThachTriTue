@@ -9,19 +9,40 @@ import {
   Dimensions,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { db } from "../config";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Home = () => {
+  const [userLogged, setUserLogged] = useState({});
   const [question, setQuestion] = useState([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
+
   const navigation = useNavigation();
+  
 
   useEffect(() => {
+    fetchUserLogged();
     getCategory();
-    console.log(question);
   }, []);
+
+  const pressConsole = () => {
+    console.log(userLogged);
+  }
+
+  const fetchUserLogged = async () => {
+    try {
+      const userData = await AsyncStorage.getItem('userLogin');
+      if (userData) {
+        setUserLogged(JSON.parse(userData));
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu:', error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const getCategory = async () => {
     if (loaded) return;
@@ -37,19 +58,19 @@ const Home = () => {
   const ScienceData = question.filter(
     (item) => item.category === "Khoa Học và Công nghệ"
   );
-  const scienceName = ScienceData.map((item) => item.category).slice(0,1);
+  const scienceName = ScienceData.map((item) => item.category).slice(0, 1);
 
   //lấy data Địa lý
   const geographyData = question.filter(
     (item) => item.category === "Địa lý và Môi trường"
   );
-  const geoName = geographyData.map((item) => item.category).slice(0,1);
+  const geoName = geographyData.map((item) => item.category).slice(0, 1);
 
   //Lấy data Giải trí
   const sportData = question.filter(
     (item) => item.category === "Thể thao và Giải trí"
   );
-  const sportName = sportData.map((item) => item.category).slice(0,1);
+  const sportName = sportData.map((item) => item.category).slice(0, 1);
 
   return (
     <ScrollView contentContainerStyle={[styles.container]}>
@@ -78,17 +99,17 @@ const Home = () => {
               marginHorizontal: 10,
             }}
           >
-            Khoa Tran
+            {userLogged.name}
           </Text>
         </View>
-        <View style={styles.avatar}>
-          <Image
-            style={{ width: 48, height: 51, marginHorizontal: 10 }}
-            source={require("../Images/kitty.png")}
-          />
+        <View style={styles.point}>
+          <Image source={require("../Images/mana.png")} />
+          <Text style={styles.pointText}>{userLogged.point}</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.recentQuiz}>
+      <TouchableOpacity 
+      onPress={pressConsole}
+      style={styles.recentQuiz}>
         <ImageBackground
           style={styles.maskRecent}
           resizeMode="cover"
@@ -306,12 +327,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
   },
-  avatar: {
-    width: 75,
-    height: 75,
+  point: {
+    flexDirection: 'row',
+    width: "20%",
+    height: "80%",
     backgroundColor: "#fff",
     borderRadius: 50,
     justifyContent: "center",
+    alignItems: "center",
+    gap: 5,
+  },
+  pointText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   recentQuiz: {
     width: 327,

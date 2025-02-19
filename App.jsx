@@ -28,7 +28,7 @@ function MyTabs() {
     >
       <Tab.Screen
         name="Home"
-        component={Home}
+        component={HomeStack}
         options={{
           tabBarLabel: "",
           tabBarActiveTintColor: "#6A5AE0",
@@ -81,7 +81,7 @@ function MyTabs() {
 function HomeStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Home" component={MyTabs} />
+      <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="QAmonitor" component={QAmonitor} />
       <Stack.Screen name="Result" component={Result} />
       <Stack.Screen name="DetailAnswer" component={DetailAnswer} />
@@ -96,10 +96,10 @@ export default function App() {
   return (
     <RoomsProvider>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Reis" component={Reis} />
-          <Stack.Screen name="Home" component={HomeStack} />
+          <Stack.Screen name="MyTabs" component={MyTabs} />
         </Stack.Navigator>
       </NavigationContainer>
     </RoomsProvider>

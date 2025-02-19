@@ -17,7 +17,6 @@ import { useNavigation } from "@react-navigation/native";
 import Custminputpass from "../custom/Custminputpass";
 import { db, auth } from "../config";
 import { collection, addDoc } from "firebase/firestore";
-import sha256 from 'js-sha256';
 import crypto from 'crypto-js';
 
 const Reis = () => {

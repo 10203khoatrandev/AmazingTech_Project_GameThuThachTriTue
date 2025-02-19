@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { db } from "../config";
 import { collection, getDocs, query } from "firebase/firestore";
 import crypto from "crypto-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = ({ route }) => {
   const navigation = useNavigation();
@@ -70,8 +71,11 @@ const Login = ({ route }) => {
       (user) => user.email === email && user.password === hashedPassword
     );
 
+    await AsyncStorage.setItem('userLogin', JSON.stringify(user));
+    
     if (user) {
-      navigation.navigate("Home");
+      console.log(user);
+      navigation.navigate('MyTabs',{user: user});
     } else {
       Alert.alert(
         "Thông",
@@ -91,7 +95,7 @@ const Login = ({ route }) => {
 
   const onpressConsole = () => {
     console.log(users);
-  }
+  };
 
   return (
     <View style={{ backgroundColor: "white", flex: 1 }}>
@@ -142,9 +146,7 @@ const Login = ({ route }) => {
           <TouchableOpacity>
             <Image source={require("../Images/logoGoogle.png")}></Image>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => console.log(users[1])}
-          >
+          <TouchableOpacity onPress={() => console.log(users[1])}>
             <Image source={require("../Images/logoFb.png")} />
           </TouchableOpacity>
         </View>
