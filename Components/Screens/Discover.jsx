@@ -1,77 +1,99 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useState } from "react";
+import TopQuiz from "../Component/TopQuiz";
+import Quiz from '../Component/Quiz';
+import Room from '../Component/Room';
+import Friends from '../Component/Friends';
 
 export default function DiscoverScreen() {
+  const [tabs, setTabs] = useState([
+    { id: '1', name: 'Top', active: true },
+    { id: '2', name: 'Quiz', active: false },
+    { id: '3', name: 'Room', active: false },
+    { id: '4', name: 'Friends', active: false },
+  ]);
+
+  const handleTabPress = (id) => {
+    setTabs(tabs.map(tab => ({ ...tab, active: tab.id === id })));
+  };
+
+  const renderContent = () => {
+    const activeTab = tabs.find(tab => tab.active);
+    switch (activeTab.name) {
+      case 'Top':
+        return <TopQuiz />;
+      case 'Quiz':
+        return <Quiz />;
+      case 'Room':
+        return <Room />;
+      case 'Friends':
+        return <Friends />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity>
-          <FontAwesome name="chevron-left" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Khám Phá</Text>
-        <TouchableOpacity style={styles.createRoomButton}>
-          <FontAwesome name="plus" size={16} color="black" />
-          <Text style={styles.createRoomText}>Tạo phòng</Text>
-        </TouchableOpacity>
-      </View>
-      
-      {/* Tabs */}
-      <View style={styles.tabsContainer}>
-        <View style={styles.tabs}>
-          <Text style={styles.activeTab}>Top</Text>
-          <Text style={styles.inactiveTab}>Quiz</Text>
-          <Text style={styles.inactiveTab}>Categories</Text>
-          <Text style={styles.inactiveTab}>Friends</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity>
+            <FontAwesome name="chevron-left" size={24} color="white" />
+          </TouchableOpacity>
+          <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={styles.headerText}>Discover</Text>
+          </View>
         </View>
 
-        {/* Quiz List */}
-        <View style={styles.quizList}>
-          <Text style={styles.quizTitle}>Quiz</Text>
-          <TouchableOpacity style={styles.quizItem}>
-            <Text style={styles.quizText}>Statistics Math Quiz</Text>
-            <FontAwesome name="chevron-right" size={20} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.quizItem}>
-            <Text style={styles.quizText}>Matrices Quiz</Text>
-            <FontAwesome name="chevron-right" size={20} color="black" />
-          </TouchableOpacity>
+        {/* Tabs */}
+        <View style={styles.tabsContainer}>
+          <FlatList
+            data={tabs}
+            horizontal
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleTabPress(item.id)} style={styles.tabButton}>
+                <Text style={item.active ? styles.activeTab : styles.inactiveTab}>{item.name}</Text>
+              </TouchableOpacity>
+            )}
+            contentContainerStyle={styles.tabsList} // Áp dụng style cho danh sách tabs
+            showsHorizontalScrollIndicator={false} // Ẩn thanh cuộn ngang
+            style={styles.flatList} // Thêm style cho FlatList
+          />
+
+          {/* Render Content */}
+          {renderContent()}
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#6A5AE0', // Màu nền cho toàn bộ giao diện
+  },
   container: {
     flex: 1,
-    backgroundColor: '#6B46C1',
     padding: 16,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 50,
+    paddingTop: 16, // Đảm bảo không bị che khuất bởi thanh trạng thái
   },
   headerText: {
     color: 'white',
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginLeft: 100,
-  },
-  createRoomButton: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
   },
   createRoomText: {
     marginLeft: 8,
     color: 'black',
-    fontSize: 16,
   },
   tabsContainer: {
     marginTop: 16,
@@ -79,38 +101,25 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 16,
-  },
-  tabs: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    paddingBottom: 8,
+    flex: 1,
+    // Đảm bảo tabs container không chiếm quá nhiều diện tích
   },
   activeTab: {
-    color: '#6B46C1',
+    color: '#6A5AE0',
     fontWeight: 'bold',
+    marginRight: 16,
   },
   inactiveTab: {
     color: 'gray',
+    marginRight: 16,
   },
-  quizList: {
-    marginTop: 16,
+  tabsList: {
+    justifyContent: "space-around",
+    width: "100%",
+    marginBottom: 10,
   },
-  quizTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  quizItem: {
-    marginTop: 8,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  quizText: {
-    fontSize: 16,
-    fontWeight: '600',
+  flatList: {
+    maxHeight: 50, // Giới hạn chiều cao của FlatList
+    flexShrink: 1, // Cho phép FlatList co lại khi cần thiết
   },
 });
