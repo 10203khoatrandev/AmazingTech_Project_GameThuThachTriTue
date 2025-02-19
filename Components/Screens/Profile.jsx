@@ -27,11 +27,11 @@ const ProfileScreen = () => {
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity>
-                    <Icon name="arrow-left" size={32} color="white" />
+                    <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}></Text>
                 <TouchableOpacity>
-                    <Icon name="cog" size={32} color="white" />
+                    <Icon name="cog" size={20} color="white" />
                 </TouchableOpacity>
             </View>
 
@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         paddingHorizontal: 20,
         paddingBottom: 20,
-        marginTop: 20
     },
     headerTitle: {
         fontSize: 18,
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-around",
         width: "100%",
-        paddingVertical: 10,
+     
     },
     tabContainer: {
         flex: 1,
@@ -228,6 +227,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         width: "100%",
-        flexGrow: 1,
+        
     },
 });
