@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    marginTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -88,8 +89,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 25,
+    fontWeight: '550',
   },
   createRoomText: {
     marginLeft: 8,
@@ -98,8 +99,7 @@ const styles = StyleSheet.create({
   tabsContainer: {
     marginTop: 16,
     backgroundColor: 'white',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderRadius: 20,
     padding: 16,
     flex: 1,
     // Đảm bảo tabs container không chiếm quá nhiều diện tích

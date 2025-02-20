@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Modal, TextInput } from 'react-native';
 import React, { useState, useContext } from 'react';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import { RoomsContext } from '../Component/RoomsContext';
+import { FloatingButtonContext } from '../Component/FloatingButtonContext';
 
 const Room = () => {
     const { rooms, setRooms } = useContext(RoomsContext);
+    const { setCreatedRoom } = useContext(FloatingButtonContext);
     const [modalVisible, setModalVisible] = useState(false);
     const [roomName, setRoomName] = useState('');
     const [questionSet, setQuestionSet] = useState('');
@@ -24,8 +26,15 @@ const Room = () => {
         setRoomName('');
         setQuestionSet('');
         setPassword('');
+        setCreatedRoom(newRoom);
         navigation.navigate('JoinRoom', { room: newRoom });
     };
+
+    // const handleJoinCreatedRoom = () => {
+    //     if (createdRoom) {
+    //         navigation.navigate('JoinRoom', { room: createdRoom });
+    //     }
+    // };
 
     return (
         <View style={styles.container}>
@@ -34,7 +43,7 @@ const Room = () => {
                 data={rooms}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.roomItem}>
+                    <TouchableOpacity style={styles.roomItem} onPress={() => navigation.navigate('JoinRoom', { room: item })}>
                         <View>
                             <Text style={styles.roomName}>{item.name}</Text>
                             <Text style={styles.roomDescription}>{item.des}</Text>
@@ -62,26 +71,30 @@ const Room = () => {
                         <Text style={styles.modalTitle}>Create Room</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Room Name"
+                            placeholder="Tên Phòng"
                             value={roomName}
                             onChangeText={setRoomName}
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="Question Set"
+                            placeholder="Mức Cược"
                             value={questionSet}
                             onChangeText={setQuestionSet}
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="Password"
+                            placeholder="Mật Khẩu"
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry
                         />
                         <View style={styles.buttonContainer}>
-                            <Button title="Cancel" onPress={() => setModalVisible(false)} />
-                            <Button title="Create" onPress={handleCreateRoom} />
+                            <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.createButton} onPress={handleCreateRoom}>
+                                <Text style={styles.buttonText}>Create</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -177,6 +190,25 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
+    },
+    cancelButton: {
+        backgroundColor: 'rgb(174, 1, 96)',
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+        flex: 1,
+        marginRight: 10,
+    },
+    createButton: {
+        backgroundColor: 'rgb(96, 75, 255)',
+        padding: 10,
+        borderRadius: 10,
+        alignItems: 'center',
+        flex: 1,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
     },
     emptyText: {
         textAlign: 'center',

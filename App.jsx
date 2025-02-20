@@ -16,6 +16,8 @@ import DiscoverScreen from "./Components/Screens/Discover";
 import JoinRoom from "./Components/Component/JoinRoom";
 import Room from "./Components/Component/Room";
 import { RoomsProvider } from './Components/Component/RoomsContext';
+import { FloatingButtonProvider } from './Components/Component/FloatingButtonContext';
+import FloatingButton from './Components/Component/FloatingButton';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -95,13 +97,16 @@ function HomeStack() {
 export default function App() {
   return (
     <RoomsProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Reis" component={Reis} />
-          <Stack.Screen name="Home" component={HomeStack} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <FloatingButtonProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Reis" component={Reis} />
+            <Stack.Screen name="Home" component={HomeStack} />
+          </Stack.Navigator>
+          <FloatingButton />
+        </NavigationContainer>
+      </FloatingButtonProvider>
     </RoomsProvider>
   );
 }
