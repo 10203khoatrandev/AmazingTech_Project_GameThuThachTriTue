@@ -14,8 +14,8 @@ import { Alert } from "react-native";
 import Custminputpass from "../custom/Custminputpass";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import { db } from "../config";
-import { collection, getDocs, query } from "firebase/firestore";
+import { realtimeDb } from "../config";
+import { ref, get, child } from "firebase/database";
 
 const Login = () => {
   const navigation = useNavigation();
@@ -23,28 +23,30 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isChecked, setIsChecked] = useState(false);
   const [isEntry, setIsEntry] = useState(true);
-  const [loaded, setLoaded] = useState(false);
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     getUsers();
-  }, [users]);
-  
+  }, []);
+
   const getUsers = async () => {
     try {
-      const usersData = await getDocs(collection(db, "users"));
-      setUsers(usersData.docs.map((doc) => ({
-        ...doc.data(), id: doc.id
-      })));
+      const dbRef = ref(realtimeDb);
+      const snapshot = await get(child(dbRef, `users`));
+      if (snapshot.exists()) {
+        const usersData = snapshot.val();
+        const usersList = Object.keys(usersData).map((key) => ({
+          ...usersData[key],
+          id: key,
+        }));
+        setUsers(usersList);
+      } else {
+        console.log("No data available");
+      }
     } catch (error) {
       console.log(error);
     }
-  }
-
-  const onPressTest = () => {
-    console.log(users);
-  }
-
+  };
 
   const onLogin = async (email, password) => {
     if (!email || !password) {
@@ -53,17 +55,17 @@ const Login = () => {
     }
 
     if (!isValidEmail(email)) {
-      Alert.alert("Lỗi", "Email không hợp lệ!");
+      Alert.alert("Lỗi", "Email không hợp lệ!");
       return;
     }
 
     const user = users.find((user) => user.email === email && user.password === password);
-    
+
     if (user) {
       Alert.alert("Thông báo", "Đăng nhập thành công!");
       navigation.navigate("Home");
     } else {
-      Alert.alert("Thông", "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại");
+      Alert.alert("Thông báo", "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại");
     }
   };
 

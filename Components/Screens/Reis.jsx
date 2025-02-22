@@ -15,8 +15,9 @@ import Custminputpass2 from "../custom/Custminputpass2";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import Custminputpass from "../custom/Custminputpass";
-import { db } from "../config";
-import { collection, addDoc } from "firebase/firestore";
+import { auth, realtimeDb } from "../config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { ref, set } from "firebase/database";
 
 const Reis = () => {
   const navigation = useNavigation();
@@ -27,11 +28,7 @@ const Reis = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isEntry, setIsEntry] = useState(true);
 
-  // const onLogin = () => {
-  //   navigation.navigate("Home");
-  // };
-
-  const onRegister = async() => {
+  const onRegister = async () => {
     if (!username || !email || !password || !retypePassword) {
       Alert.alert("Lỗi", "Vui lòng nhập đầy đủ!");
       return;
@@ -42,25 +39,30 @@ const Reis = () => {
       return;
     }
 
-    if(!isValidEmail(email)){
-      Alert.alert("Lỗi", "Email không hợp lệ!");
+    if (!isValidEmail(email)) {
+      Alert.alert("Lỗi", "Email không hợp lệ!");
       return;
     }
 
     try {
-      const docRef = await addDoc(collection(db, "users"), {
-        name: username,
+      // Tạo tài khoản người dùng với Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Lưu thông tin người dùng vào Realtime Database
+      await set(ref(realtimeDb, `users/${user.uid}`), {
+        username: username,
         email: email,
-        password: password, // Lưu mật khẩu đã hash
+        password: password, 
         point: 100
       });
-  
-      console.log("Document written with ID: ", docRef.id);
+
+      console.log("User created with ID: ", user.uid);
       Alert.alert("Thành công", "Tài khoản đã được tạo thành công!");
       // Chuyển hướng người dùng hoặc thực hiện các hành động khác
       navigation.navigate("Login");
     } catch (error) {
-      console.log("Error adding document: ", error);
+      console.log("Error creating user: ", error);
       Alert.alert("Lỗi", "Đã có lỗi xảy ra khi tạo tài khoản. Vui lòng thử lại sau!");
     }
   };
