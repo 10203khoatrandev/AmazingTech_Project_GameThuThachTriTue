@@ -2,22 +2,28 @@ import {
   Image,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
 import Custominput from "../custom/Custominput";
 import ButtonCustom from "../custom/ButtonCustom";
 import Thanhngang from "../custom/Thanhngang";
-import { Alert } from "react-native";
 import Custminputpass2 from "../custom/Custminputpass2";
-import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import { auth, realtimeDb } from "../config";
+import { ref, set } from "firebase/database";
+import Toast from "react-native-toast-message";
 import Custminputpass from "../custom/Custminputpass";
-import { db, auth } from "../config";
-import { collection, addDoc } from "firebase/firestore";
-import crypto from 'crypto-js';
+
+// Lấy kích thước màn hình để tính toán kích thước logo phù hợp
+const { width, height } = Dimensions.get('window');
 
 const Reis = () => {
   const navigation = useNavigation();
@@ -25,93 +31,17 @@ const Reis = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [retypePassword, setRetypePassword] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
   const [isEntry, setIsEntry] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  const onPressConsole = () => {
-    const password = "khoa123";
-    const hashedPassword = hashPassword(password);
-    console.log(hashedPassword);
-  };
-
-  const hashPassword = (password) => {
-    return crypto.SHA256(password).toString();
-  }
-
-  const handleRegister = async() => {
-    try {
-      //Validate dữ liệu đầu vào người dùng
-      if (!username || !email || !password || !retypePassword) {
-        Alert.alert("Lỗi", "Vui lòng nhập đầy đủ!");
-        return;
-      }
-  
-      if (password !== retypePassword) {
-        Alert.alert("Lỗi", "Mật khẩu không trùng khớp!");
-        return;
-      }
-  
-      if(!isValidEmail(email)){
-        Alert.alert("Lỗi", "Email không hợp lệ!");
-        return;
-      }
-
-      // Tạo người dùng mới với email và password
-      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-
-      // Gửi email xác thực
-      await userCredential.user.sendEmailVerification();
-
-      // Lưu thông tin người dùng vào Firestore
-      await db.collection('users').doc(userCredential.user.uid).set({
-        name: username, 
-        email: email,
-        password: password,
-        point: 100,
-        userQuestions: []
-      });
-
-      Alert.alert('Thành công', 'Một email xác thực đã được gửi đến địa chỉ email của bạn.');
-    } catch (error) {
-      Alert.alert('Lỗi', "Tạo tài khoản không thành công. Vui lòng thử lại sau!");
-    }
-  }
-
-  const onRegister = async() => {
-    if (!username || !email || !password || !retypePassword) {
-      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ!");
-      return;
-    }
-
-    if (password !== retypePassword) {
-      Alert.alert("Lỗi", "Mật khẩu không trùng khớp!");
-      return;
-    }
-
-    if(!isValidEmail(email)){
-      Alert.alert("Lỗi", "Email không hợp lệ!");
-      return;
-    }
-
-    const hashedPassword = hashPassword(password);
-
-    try {
-      const docRef = await addDoc(collection(db, "users"), {
-        name: username,
-        email: email,
-        password: hashedPassword, // Lưu mật khẩu đã hash
-        point: 100,
-        userQuestions: []
-      });
-  
-      console.log("Document written with ID: ", docRef.id);
-      Alert.alert("Thành công", "Tài khoản đã được tạo thành công!");
-      // Chuyển hướng người dùng hoặc thực hiện các hành động khác
-      navigation.navigate("Login");
-    } catch (error) {
-      console.log("Error adding document: ", error);
-      Alert.alert("Lỗi", "Đã có lỗi xảy ra khi tạo tài khoản. Vui lòng thử lại sau!");
-    }
+  const showToast = (title, message, type = "error") => {
+    Toast.show({
+      text1: title,
+      text2: message,
+      type,
+      duration: 3000,
+      position: "top",
+    });
   };
 
   const isValidEmail = (email) => {
@@ -119,97 +49,203 @@ const Reis = () => {
     return re.test(email);
   };
 
-  return (
-    <View style={{ backgroundColor: "white", flex: 1 }}>
-      <Image
-        source={require("../Images/logoquiz.png")}
-        style={styles.img}
-        onPress={() => Alert.alert("", "aaa")}
-      />
+  const handleRegister = async () => {
+    try {
+      // Validate dữ liệu đầu vào người dùng
+      if (!username || !email || !password || !retypePassword) {
+        showToast("Thông báo", "Vui lòng nhập đầy đủ thông tin người dùng!");
+        return;
+      }
 
-      <View style={styles.container}>
-        <View style={{ width: "100%" }}>
-          <Custominput
-            IconName={"person"}
-            placeholder={"Tên tài khoản"}
-            value={username}
-            onChangeText={(text) => setUsername(text)}
-          ></Custominput>
-          <Custominput
-            IconName={"email"}
-            placeholder={"Nhập email"}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          ></Custominput>
-          <Custminputpass2
-            IconName={"password"}
-            placeholder={"Nhập mật khẩu"}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            onPress={() => {
-              setIsEntry(!isEntry);
-            }}
-            entry={isEntry}
-          ></Custminputpass2>
-          <Custminputpass2
-            IconName={"password"}
-            placeholder={"Nhập lại mật khẩu"}
-            value={retypePassword}
-            onChangeText={(text) => setRetypePassword(text)}
-            onPress={() => {
-              setIsEntry(!isEntry);
-            }}
-            entry={isEntry}
-          ></Custminputpass2>
-        </View>
-        <ButtonCustom title={"Đăng ký"} onPress={onRegister}></ButtonCustom>
-        <Thanhngang title={"hoặc"}></Thanhngang>
-        <View
-          style={{
-            width: 120,
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
+      if (password !== retypePassword) {
+        showToast("Thông báo", "Mật khẩu không khớp nhau!");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showToast("Thông báo", "Email không hợp lệ!");
+        return;
+      }
+      
+      // Hiển thị trạng thái loading
+      setLoading(true);
+
+      // Tạo người dùng mới với email và password
+      const userCredential = await auth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      
+      if (!userCredential?.user) {
+        showToast("Lỗi", "Không thể tạo tài khoản. Vui lòng thử lại!");
+        return;
+      }
+      
+      const user = userCredential.user;
+
+      // Gửi email xác thực
+      await user.sendEmailVerification();
+
+      // Lưu thông tin người dùng vào Realtime Database
+      await set(ref(realtimeDb, `users/${user.uid}`), {
+        name: username,
+        email: email,
+        point: 100,
+        remainingQuestions: 10,
+        status: "offline",
+        avatar: null,
+        createdAt: new Date().toISOString(),
+      });
+
+      showToast("Thành công", "Mã xác nhận đã gửi đến email của bạn", "success");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.log("Lỗi đăng ký:", error);
+      
+      if (error.code === "auth/email-already-in-use") {
+        showToast("Thông báo", "Email này đã được sử dụng!");
+      } else if (error.code === "auth/weak-password") {
+        showToast("Thông báo", "Mật khẩu cần ít nhất 6 ký tự!");
+      } else {
+        showToast("Lỗi", "Tạo tài khoản không thành công. Vui lòng thử lại sau!");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          keyboardShouldPersistTaps="handled"
         >
-          <TouchableOpacity>
-            <Image source={require("../Images/logoGoogle.png")}></Image>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => console.log(email + " : " + password)}
-          >
-            <Image source={require("../Images/logoFb.png")} />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}
-        >
-          <Text>Bạn đã có tài khoản?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.text}>Đăng nhập</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../Images/logoquiz.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.container}>
+            <View style={styles.inputContainer}>
+              <Custominput
+                IconName="person"
+                placeholder="Tên tài khoản"
+                value={username}
+                onChangeText={setUsername}
+              />
+              <Custominput
+                IconName="email"
+                placeholder="Nhập email"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Custminputpass
+                IconName="password"
+                placeholder="Nhập mật khẩu"
+                value={password}
+                onChangeText={setPassword}
+                onPress={() => setIsEntry(!isEntry)}
+                entry={isEntry}
+              />
+              <Custminputpass2
+                IconName="password"
+                placeholder="Nhập lại mật khẩu"
+                value={retypePassword}
+                onChangeText={setRetypePassword}
+                onPress={() => setIsEntry(!isEntry)}
+                entry={isEntry}
+              />
+            </View>
+
+            <ButtonCustom
+              title="Đăng ký"
+              onPress={handleRegister}
+              disabled={loading}
+            >
+              {loading && (
+                <ActivityIndicator size="small" color="#fff" style={styles.loader} />
+              )}
+            </ButtonCustom>
+
+            <Thanhngang title="hoặc" />
+
+            <View style={styles.socialContainer}>
+              <TouchableOpacity>
+                <Image source={require("../Images/logoGoogle.png")} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.loginContainer}>
+              <Text>Bạn đã có tài khoản?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                <Text style={styles.loginText}>Đăng nhập</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 export default Reis;
 
 const styles = StyleSheet.create({
-  img: {
-    width: "90%",
-    height: 300,
-    borderBottomRightRadius: 200,
-    marginTop: 70,
-    marginBottom: 20,
-    justifyContent: "center",
-    alignSelf: "center",
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white",
   },
-  container: { alignItems: "center", padding: 20 },
-  text: {
+  keyboardView: {
+    flex: 1,
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
+  logoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: Platform.OS === "ios" ? "5%" : "2%",
+    paddingHorizontal: 10,
+  },
+  logo: {
+    width: Platform.OS === "ios" ? width * 0.92 : width * 0.95,
+    height: Platform.OS === "ios" ? height * 0.28 : height * 0.32,
+    maxHeight: "40%",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 5,
+  },
+  inputContainer: {
+    width: "100%",
+  },
+  socialContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  loginContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 15,
+    marginBottom: Platform.OS === "ios" ? 20 : 10,
+  },
+  loginText: {
     fontSize: 15,
     fontWeight: "bold",
     marginLeft: 10,
     color: "#009245",
+  },
+  loader: {
+    marginLeft: 10,
   },
 });

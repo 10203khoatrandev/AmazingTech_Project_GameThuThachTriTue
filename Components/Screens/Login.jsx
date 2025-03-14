@@ -2,181 +2,387 @@ import {
   Image,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Dimensions,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Custominput from "../custom/Custominput";
 import ButtonCustom from "../custom/ButtonCustom";
 import Thanhngang from "../custom/Thanhngang";
-import { Alert } from "react-native";
 import Custminputpass from "../custom/Custminputpass";
-import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import { db } from "../config";
-import { collection, getDocs, query } from "firebase/firestore";
-import crypto from "crypto-js";
+import { auth, realtimeDb } from "../config";
+import { ref, get, update, set } from "firebase/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri } from 'expo-auth-session';
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
 
-const Login = ({ route }) => {
+// Đảm bảo WebBrowser được đăng ký
+WebBrowser.maybeCompleteAuthSession();
+
+// Lấy kích thước màn hình để tính toán kích thước logo phù hợp
+const { width, height } = Dimensions.get("window");
+
+const Login = () => {
   const navigation = useNavigation();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isChecked, setIsChecked] = useState(false);
   const [isEntry, setIsEntry] = useState(true);
-  const [loaded, setLoaded] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Cấu hình Google Auth
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    expoClientId:
+      "237970140633-v8brt5vrllu9silio19r4klfu6bsj3fd.apps.googleusercontent.com", // Từ Google Cloud Console
+    iosClientId:
+      "237970140633-be83gv0np8r1vntvgvsu0r4vjlqdo4qu.apps.googleusercontent.com", // Từ Google Cloud Console
+    // androidClientId: 'YOUR_ANDROID_CLIENT_ID', // Từ Google Cloud Console
+    webClientId:
+      "237970140633-v8brt5vrllu9silio19r4klfu6bsj3fd.apps.googleusercontent.com", // Từ Google Cloud Console
+    // Thêm redirectUri với scheme
+    redirectUri: makeRedirectUri({
+      scheme: 'QuizApplication'
+    })
+  });
 
   useEffect(() => {
-    getUsers();
-  }, [users]);
-
-  const hashPassword = (password) => {
-    return crypto.SHA256(password).toString();
-  };
-
-  const getUsers = async () => {
-    try {
-      const usersData = await getDocs(collection(db, "users"));
-      setUsers(
-        usersData.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }))
-      );
-    } catch (error) {
-      console.log(error);
+    if (response?.type === "success") {
+      const { authentication } = response;
+      handleGoogleLogin(authentication);
     }
-  };
-
-  const onPressTest = () => {
-    console.log(users);
-  };
-
-  const onLogin = async (email, password) => {
-    if (!email || !password) {
-      Alert.alert("Lỗi", "Vui lòng nhập đầy đủ!");
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      Alert.alert("Lỗi", "Email không hợp lệ!");
-      return;
-    }
-    const hashedPassword = hashPassword(password);
-
-    const user = users.find(
-      (user) => user.email === email && user.password === hashedPassword
-    );
-
-    await AsyncStorage.setItem('userLogin', JSON.stringify(user));
-    
-    if (user) {
-      console.log(user);
-      navigation.navigate('MyTabs',{user: user});
-    } else {
-      Alert.alert(
-        "Thông",
-        "Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại"
-      );
-    }
-  };
+  }, [response]);
 
   const isValidEmail = (email) => {
     const re = /^[^@]+@[^@]+\.[^@]+$/;
     return re.test(email);
   };
 
-  const handleLogin = () => {
-    onLogin(email, password);
+  const showToast = (title, message, type = "error") => {
+    Toast.show({
+      text1: title,
+      text2: message,
+      type,
+      duration: 3000,
+      position: "top",
+    });
   };
 
-  const onpressConsole = () => {
-    console.log(users);
+  const login = async () => {
+    try {
+      // Validate inputs
+      if (!email || !password) {
+        showToast("Thông báo", "Vui lòng nhập đầy đủ!");
+        return;
+      }
+
+      if (!isValidEmail(email)) {
+        showToast("Thông báo", "Email không hợp lệ!");
+        return;
+      }
+
+      setLoading(true);
+
+      const userCredential = await auth.signInWithEmailAndPassword(
+        email,
+        password
+      );
+
+      if (!userCredential?.user) {
+        showToast("Lỗi", "Đã xảy ra lỗi khi đăng nhập");
+        return;
+      }
+
+      if (!userCredential.user.emailVerified) {
+        showToast("Thông báo", "Vui lòng xác nhận email của bạn để đăng nhập");
+        return;
+      }
+
+      // User is verified, proceed with login
+      console.log("Đăng nhập thành công!");
+      const userRef = ref(realtimeDb, `users/${userCredential.user.uid}`);
+      const snapshot = await get(userRef);
+
+      if (!snapshot.exists()) {
+        showToast("Lỗi", "Không tìm thấy người dùng");
+        return;
+      }
+
+      // Store user data and navigate
+      const userData = snapshot.val();
+      const userId = userCredential.user.uid;
+
+      await Promise.all([
+        AsyncStorage.setItem("userLogin", JSON.stringify(userData)),
+        AsyncStorage.setItem("userId", JSON.stringify(userId)),
+        update(userRef, { status: "online" }),
+      ]);
+
+      navigation.navigate("MyTabs");
+    } catch (error) {
+      console.log("Lỗi đăng nhập:", error);
+
+      if (error.code === "auth/invalid-credential") {
+        showToast("Thông báo", "Email hoặc mật khẩu không đúng!");
+      } else {
+        showToast("Lỗi", "Đã xảy ra lỗi khi đăng nhập");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Xử lý đăng nhập Google
+  const handleGoogleLogin = async (authentication) => {
+    try {
+      setGoogleLoading(true);
+
+      // Lấy Google ID token
+      const { idToken, accessToken } = authentication;
+
+      // Tạo credential cho Firebase Auth
+      const credential = GoogleAuthProvider.credential(idToken, accessToken);
+
+      // Đăng nhập vào Firebase với Google credential
+      const userCredential = await signInWithCredential(auth, credential);
+      const user = userCredential.user;
+
+      // Kiểm tra user trong database
+      const userRef = ref(realtimeDb, `users/${user.uid}`);
+      const snapshot = await get(userRef);
+
+      let userData;
+
+      if (snapshot.exists()) {
+        // Cập nhật thông tin nếu người dùng đã tồn tại
+        userData = snapshot.val();
+        await update(userRef, {
+          status: "online",
+          lastLogin: new Date().toISOString(),
+          displayName: user.displayName || userData.displayName,
+          photoURL: user.photoURL || userData.photoURL,
+        });
+      } else {
+        // Tạo người dùng mới nếu chưa tồn tại
+        userData = {
+          email: user.email,
+          displayName: user.displayName || "",
+          photoURL: user.photoURL || "",
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+          status: "online",
+          providerType: "google",
+        };
+
+        await set(userRef, userData);
+      }
+
+      // Lưu thông tin người dùng
+      await Promise.all([
+        AsyncStorage.setItem("userLogin", JSON.stringify(userData)),
+        AsyncStorage.setItem("userId", JSON.stringify(user.uid)),
+      ]);
+
+      showToast("Thành công", "Đăng nhập Google thành công!", "success");
+      navigation.navigate("MyTabs");
+    } catch (error) {
+      console.log("Lỗi đăng nhập Google:", error);
+      showToast("Lỗi", "Đăng nhập Google thất bại. Vui lòng thử lại.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  // Hàm gọi đăng nhập Google
+  const signInWithGoogle = async () => {
+    if (googleLoading) return;
+
+    try {
+      setGoogleLoading(true);
+      await promptAsync();
+    } catch (error) {
+      console.log("Lỗi khi mở đăng nhập Google:", error);
+      showToast("Lỗi", "Không thể mở đăng nhập Google");
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   return (
-    <View style={{ backgroundColor: "white", flex: 1 }}>
-      <Image
-        source={require("../Images/logoquiz.png")}
-        style={styles.img}
-        onPress={() => Alert.alert("", "aaa")}
-      />
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("../Images/logoquiz.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </View>
 
-      <View style={styles.container}>
-        <View style={{ width: "100%" }}>
-          <Custominput
-            IconName={"email"}
-            placeholder={"Nhập email"}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-          ></Custominput>
-          <Custminputpass
-            IconName={"password"}
-            placeholder={"Password"}
-            onPress={() => {
-              setIsEntry(!isEntry);
-            }}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            entry={isEntry}
-          ></Custminputpass>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            width: "100%",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text>Quên Mật Khẩu ? </Text>
-        </View>
-        <ButtonCustom title={"Đăng nhập"} onPress={handleLogin}></ButtonCustom>
-        <Thanhngang title={"hoặc"}></Thanhngang>
-        <View
-          style={{
-            width: 120,
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <TouchableOpacity>
-            <Image source={require("../Images/logoGoogle.png")}></Image>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => console.log(users[1])}>
-            <Image source={require("../Images/logoFb.png")} />
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{ flexDirection: "row", alignItems: "center", marginTop: 20 }}
-        >
-          <Text>Bạn Không có tài khoản?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Reis")}>
-            <Text style={styles.text}>Tạo tài khoản</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
+          <View style={styles.container}>
+            <View style={styles.inputContainer}>
+              <Custominput
+                IconName="email"
+                placeholder="Nhập email"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Custminputpass
+                IconName="password"
+                placeholder="Password"
+                onPress={() => setIsEntry(!isEntry)}
+                value={password}
+                onChangeText={setPassword}
+                entry={isEntry}
+              />
+            </View>
+
+            <View style={styles.forgotPasswordContainer}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("PasswordReset")}
+              >
+                <Text style={styles.forgotPasswordText}>Quên Mật Khẩu?</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ButtonCustom
+              title="Đăng nhập"
+              onPress={login}
+              loading={loading}
+              disabled={loading}
+            />
+
+            <Thanhngang title="hoặc" />
+
+            <View style={styles.socialContainer}>
+              <TouchableOpacity
+                style={styles.googleButton}
+                onPress={signInWithGoogle}
+                disabled={googleLoading}
+              >
+                <Image
+                  source={require("../Images/logoGoogle.png")}
+                  style={styles.googleIcon}
+                />
+                {googleLoading ? (
+                  <Text style={styles.googleButtonText}>Đang xử lý...</Text>
+                ) : (
+                  <Text style={styles.googleButtonText}>
+                    Đăng nhập với Google
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.signupContainer}>
+              <Text>Bạn Không có tài khoản?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate("Reis")}>
+                <Text style={styles.signupText}>Tạo tài khoản</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 export default Login;
 
 const styles = StyleSheet.create({
-  img: {
-    width: "90%",
-    height: 300,
-    borderBottomRightRadius: 200,
-    marginTop: 70,
-    marginBottom: 20,
-    justifyContent: "center",
-    alignSelf: "center",
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white",
   },
-  container: { alignItems: "center", padding: 20 },
-  text: {
+  keyboardView: {
+    flex: 1,
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
+  logoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: Platform.OS === "ios" ? "8%" : "3%",
+    paddingHorizontal: 10,
+  },
+  logo: {
+    width: Platform.OS === "ios" ? width * 0.92 : width * 0.95,
+    height: Platform.OS === "ios" ? height * 0.35 : height * 0.38,
+    maxHeight: "45%",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 5,
+  },
+  inputContainer: {
+    width: "100%",
+  },
+  forgotPasswordContainer: {
+    flexDirection: "row",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    marginVertical: 10,
+  },
+  forgotPasswordText: {
+    color: "#444",
+  },
+  socialContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 10,
+    width: "100%",
+  },
+  googleButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    width: "100%",
+    justifyContent: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+  },
+  googleIcon: {
+    marginRight: 10,
+    width: 24,
+    height: 24,
+  },
+  googleButtonText: {
+    color: "#444",
+    fontWeight: "500",
+  },
+  signupContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 15,
+    marginBottom: Platform.OS === "ios" ? 20 : 10,
+  },
+  signupText: {
     fontSize: 15,
     fontWeight: "bold",
     marginLeft: 10,

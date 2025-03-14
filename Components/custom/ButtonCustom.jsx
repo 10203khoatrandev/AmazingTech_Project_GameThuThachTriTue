@@ -20,11 +20,9 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     // alignItems: "center",
     // elevation: 5, // Add this for shadow effect
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#694ae1",
     padding: 10,
     marginVertical: 10,
-    borderColor: "black",
-    borderWidth: 1,
     borderRadius: 10,
   },
   text: {
