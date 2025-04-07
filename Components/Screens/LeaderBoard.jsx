@@ -183,7 +183,7 @@ const LeaderBoard = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Leaderboard</Text>
+        <Text style={styles.headerTitle}>Bảng Xếp Hạng</Text>
       </View>
 
       {/* Top 3 BXH */}
@@ -236,7 +236,7 @@ const LeaderBoard = () => {
 
       {/* Các người chơi còn lại */}
       <View style={styles.listContainer}>
-        <Text style={styles.listTitle}>All Time Rankings</Text>
+        <Text style={styles.listTitle}>Xếp hạng khác</Text>
         <ScrollView style={styles.scrollView}>
           {restOfUsers.map((user) => (
             <View
@@ -288,19 +288,19 @@ export default LeaderBoard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#6a5adf",
+    backgroundColor: "#6a4be4",
     padding: 20,
   },
   header: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 70,
     marginBottom: 20,
   },
   headerTitle: {
     color: "#fff",
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: "bold",
   },
   podiumContainer: {
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    borderWidth: 2,
+    borderWidth: 3,
     borderColor: "#fff",
   },
   firstAvatar: {
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   listTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#FF5E78",
     marginBottom: 15,
   },
   scrollView: {

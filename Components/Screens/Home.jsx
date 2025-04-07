@@ -232,7 +232,7 @@ const Home = () => {
         <Icon name="diamond" size={20} color="#6A5AE0" />
         <Text style={styles.pointText}>{userLogged.point}</Text>
         <TouchableOpacity onPress={pressClearScreen}>
-          <Ionicons name="add-circle-outline" size={28} />
+          <Ionicons name="add-circle-outline" size={28} color={"#6A5AE0"} />
         </TouchableOpacity>
       </View>
     </View>
@@ -258,17 +258,17 @@ const Home = () => {
         renderCountdownScreen()
       ) : (
         <View style={styles.mainContainer}>
-          {/* Fixed header */}
+          {/* Header */}
           {renderHeader()}
           
-          {/* Scrollable content */}
+          {/* ScrollView */}
           <ScrollView 
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
             bounces={false}
             showsVerticalScrollIndicator={false}
           >
-            {/* Recent Quiz Section */}
+            {/* Recent Quiz */}
             <TouchableOpacity 
             style={styles.recentQuiz}>
               <ImageBackground
@@ -280,7 +280,7 @@ const Home = () => {
                   <Text style={styles.recentTitle}>Tranh Tài</Text>
                   <View style={styles.recentDescription}>
                     <Image
-                      style={{ tintColor: "#660012" }}
+                      style={{ tintColor: "#fff" }}
                       source={require("../Images/boxing.png")}
                     />
                     <Text style={styles.recentText}>
@@ -291,7 +291,7 @@ const Home = () => {
               </ImageBackground>
             </TouchableOpacity>
             
-            {/* Find Friend Section */}
+            {/* Find Friend */}
             <View style={styles.findFriendBox}>
               <ImageBackground
                 source={require("../Images/maskFriend.png")}
@@ -361,7 +361,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: "#6A5AE0",
+    backgroundColor: "#6a4be4",
   },
   scrollView: {
     flex: 1,
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   },
   point: {
     flexDirection: "row",
-    width: "30%",
+    width: "35%",
     height: "80%",
     backgroundColor: "#fff",
     borderRadius: 50,
@@ -426,11 +426,12 @@ const styles = StyleSheet.create({
   pointText: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#6A5AE0"
   },
   recentQuiz: {
     width: 327,
     height: 84,
-    backgroundColor: "#FFCCD5",
+    backgroundColor: "#FF5E78",
     borderRadius: 20,
     marginTop: 10,
     justifyContent: "center",
@@ -450,7 +451,7 @@ const styles = StyleSheet.create({
   },
   recentTitle: {
     fontSize: 18,
-    color: "#660012",
+    color: "#fff",
     fontWeight: "600",
   },
   recentDescription: {
@@ -460,7 +461,7 @@ const styles = StyleSheet.create({
   recentText: {
     width: 250,
     fontSize: 14,
-    color: "#660012",
+    color: "#fff",
     fontWeight: "600",
   },
   findFriendBox: {
@@ -517,7 +518,7 @@ const styles = StyleSheet.create({
   },
   friend2Image: {
     position: "absolute",
-    bottom: 40,
+    bottom: 25,
     right: 15,
     width: 64,
     height: 56,
@@ -545,7 +546,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 28,
     fontWeight: "600",
-    color: "#6A5AE0",
+    color: "#6a4be4",
   },
   quizBox: {
     width: 327,
@@ -561,7 +562,7 @@ const styles = StyleSheet.create({
   quizImg: {
     width: 64,
     height: 64,
-    backgroundColor: "#C4D0FB",
+    backgroundColor: "#ddd9fa",
     borderRadius: 15,
     margin: 5,
     justifyContent: "center",
@@ -587,7 +588,7 @@ const styles = StyleSheet.create({
   forwardIcon: {
     width: 20,
     height: 20,
-    tintColor: "#6A5AE0",
+    tintColor: "#6a4be4",
   },
 });
 

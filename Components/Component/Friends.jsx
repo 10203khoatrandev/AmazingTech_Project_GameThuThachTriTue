@@ -9,8 +9,15 @@ import {
   View,
   Modal,
   ActivityIndicator,
+  Platform,
 } from "react-native";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ref,
@@ -25,6 +32,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, realtimeDb } from "../config";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/FontAwesome";
+import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+import Constants from "expo-constants";
 
 const Friends = () => {
   const [user, setUser] = useState({});
@@ -36,19 +46,62 @@ const Friends = () => {
   const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [addingFriend, setAddingFriend] = useState(false);
+  const [expoPushToken, setExpoPushToken] = useState("");
 
-  // Memoized values for better performance
+  const friendRequestsRef = useRef([]);
+
+  useEffect(() => {
+    friendRequestsRef.current = friendRequests;
+  }, [friendRequests]);
+
+  // Count số lời mời kết bạn
   const friendRequestsCount = useMemo(
     () => friendRequests.length,
     [friendRequests]
   );
 
-  // Fetch user data on component mount
+  // Fetch user data
   useEffect(() => {
     fetchUserLogged();
   }, []);
 
-  // Setup online/offline status
+  // Cấu hình notifications
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+
+    // Đăng ký token
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
+    // Xử lý khi notification được nhận
+    const notificationListener = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log("Notification received:", notification);
+      }
+    );
+
+    // Xử lý khi người dùng tương tác với notification
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log("Notification clicked:", response);
+        // Mở modal thông báo lời mời kết bạn
+        setModalVisible(true);
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener);
+      Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, []);
+
+  // Setup trạng thái online/offline
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -62,13 +115,20 @@ const Friends = () => {
           status: "offline",
           lastSeen: serverTimestamp(),
         });
+
+        // Lưu notification token lên Firebase
+        if (expoPushToken) {
+          update(userStatusRef, {
+            notificationToken: expoPushToken,
+          });
+        }
       }
     });
 
     return () => unsubscribeAuth();
-  }, []);
+  }, [expoPushToken]);
 
-  // Track current user status
+  // Trạng thái người dùng hiện tại
   useEffect(() => {
     if (!userId) return;
 
@@ -86,20 +146,42 @@ const Friends = () => {
   // Track friend requests
   useEffect(() => {
     if (!userId) return;
-
-    const friendRequestsRef = ref(realtimeDb, `users/${userId}/friendRequests`);
-    const unsubscribe = onValue(friendRequestsRef, (snapshot) => {
+  
+    const dbFriendRequestsRef = ref(realtimeDb, `users/${userId}/friendRequests`);
+    const unsubscribe = onValue(dbFriendRequestsRef, async (snapshot) => {
       const friendRequestsData = snapshot.val();
       if (friendRequestsData) {
         const friendIds = Object.keys(friendRequestsData);
+        
+        // Sử dụng ref thay vì state trực tiếp
+        const currentFriendRequests = friendRequestsRef.current.map(req => req.id);
+        
+        // Tìm các lời mời mới
+        const newFriendRequests = friendIds.filter(id => !currentFriendRequests.includes(id));
+        
+        // Xử lý thông báo
+        for (const friendId of newFriendRequests) {
+          const friendRef = ref(realtimeDb, `users/${friendId}`);
+          const friendSnapshot = await get(friendRef);
+          const friendData = friendSnapshot.val();
+          
+          if (friendData && friendData.name) {
+            await sendPushNotification(
+              expoPushToken, 
+              "Lời mời kết bạn mới", 
+              `Bạn nhận được lời mời kết bạn từ ${friendData.name}`
+            );
+          }
+        }
+        
         fetchFriendRequestsDetails(friendIds);
       } else {
         setFriendRequests([]);
       }
     });
-
+  
     return () => unsubscribe();
-  }, [userId]);
+  }, [userId, expoPushToken]);
 
   // Track friends list
   useEffect(() => {
@@ -152,27 +234,24 @@ const Friends = () => {
   //Cập nhật trạng thái online/offline của bạn bè
   useEffect(() => {
     if (!userId || friends.length === 0) return;
-    
-    const statusListeners = friends.map(friend => {
+
+    const statusListeners = friends.map((friend) => {
       const friendStatusRef = ref(realtimeDb, `users/${friend.id}/status`);
-      
+
       return onValue(friendStatusRef, (snapshot) => {
         const status = snapshot.val() || "offline";
-        
-        setFriends(currentFriends => 
-          currentFriends.map(f => 
-            f.id === friend.id ? {...f, status} : f
-          )
+
+        setFriends((currentFriends) =>
+          currentFriends.map((f) => (f.id === friend.id ? { ...f, status } : f))
         );
       });
     });
-    
+
     return () => {
-      statusListeners.forEach(unsubscribe => unsubscribe());
+      statusListeners.forEach((unsubscribe) => unsubscribe());
     };
   }, [userId, friends.length]);
 
-  
   const fetchFriendRequestsDetails = async (friendIds) => {
     try {
       const promises = friendIds.map(async (friendId) => {
@@ -260,6 +339,9 @@ const Friends = () => {
       try {
         await remove(
           ref(realtimeDb, `users/${userId}/friendRequests/${friendId}`)
+        );
+        await remove(
+          ref(realtimeDb, `users/${friendId}/sentFriendRequests/${userId}`)
         );
         setFriendRequests((prev) =>
           prev.filter((request) => request.id !== friendId)
@@ -367,15 +449,87 @@ const Friends = () => {
     }
   }, [friendEmail, user.email, userId]);
 
+  // Hàm đăng ký notification
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+
+    if (Device.isDevice) {
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus !== "granted") {
+        Alert.alert("Thông báo", "Bạn cần cấp quyền để nhận thông báo!");
+        return;
+      }
+
+      token = (
+        await Notifications.getExpoPushTokenAsync({
+          projectId: Constants.expoConfig?.extra?.eas?.projectId,
+        })
+      ).data;
+    } else {
+      Alert.alert(
+        "Thông báo",
+        "Bạn cần sử dụng thiết bị thật để nhận thông báo!"
+      );
+    }
+
+    if (Platform.OS === "android") {
+      Notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#6A5AE0",
+      });
+    }
+
+    return token;
+  };
+
+  // Hàm gửi notification
+  const sendPushNotification = async (expoPushToken, title, body) => {
+    if (!expoPushToken) return;
+
+    const message = {
+      to: expoPushToken,
+      sound: "default",
+      title: title,
+      body: body,
+      data: { screen: "Friends" },
+    };
+
+    try {
+      await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Accept-encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(message),
+      });
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  };
+
   // Render friend item
   const renderFriendItem = useCallback(
     ({ item }) => (
       <View style={styles.friendBox}>
         <View style={styles.friendAvatar}>
           <Image
-            source={item.avatar 
-              ? { uri: item.avatar }
-              : require("../Images/character2.png")}
+            source={
+              item.avatar
+                ? { uri: item.avatar }
+                : require("../Images/character2.png")
+            }
             style={styles.avatarImage}
           />
           <View
@@ -391,13 +545,13 @@ const Friends = () => {
         <View style={styles.friendInfo}>
           <Text style={styles.friendName}>{item.name}</Text>
           <View style={styles.pointContainer}>
-            <Icon name="diamond" size={16} color="#fff" />
+            <Icon name="diamond" size={16} color="#6a4be4" />
             <Text style={styles.friendPoint}>{item.point}</Text>
           </View>
           <Text
             style={[
               styles.friendStatus,
-              { color: item.status === "online" ? "#E0F7FA" : "#E0E0E0" },
+              { color: item.status === "online" ? "grey" : "grey" },
             ]}
           >
             {item.status === "online" ? "Đang trực tuyến" : "Đang ngoại tuyến"}
@@ -476,7 +630,7 @@ const Friends = () => {
           style={styles.notificationButton}
           onPress={() => setModalVisible(true)}
         >
-          <Ionicons name="notifications" size={24} color="#6A5AE0" />
+          <Ionicons name="notifications" size={24} color="#FFC75F" />
           {friendRequestsCount > 0 && (
             <View style={styles.notificationBadge}>
               <Text style={styles.notificationBadgeText}>
@@ -592,7 +746,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
     borderRadius: 12,
   },
   header: {
@@ -605,12 +759,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#424242",
+    color: "#FF5E78",
   },
   notificationButton: {
     position: "relative",
     padding: 8,
-    backgroundColor: "#f0eeff",
+    backgroundColor: "rgba(249, 248, 113,0.5)",
     borderRadius: 12,
     width: 40,
     height: 40,
@@ -646,7 +800,7 @@ const styles = StyleSheet.create({
     padding: 6,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
   },
@@ -657,7 +811,7 @@ const styles = StyleSheet.create({
     color: "#424242",
   },
   addFriendButton: {
-    backgroundColor: "#6A5AE0",
+    backgroundColor: "#FF5E78",
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
@@ -682,7 +836,7 @@ const styles = StyleSheet.create({
     padding: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 2,
   },
@@ -710,7 +864,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#7A67FF",
+    backgroundColor: "#f0eeff",
     borderRadius: 16,
     marginBottom: 12,
     shadowColor: "#000",
@@ -750,7 +904,7 @@ const styles = StyleSheet.create({
   friendName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#6a4be4",
     marginBottom: 4,
   },
   pointContainer: {
@@ -759,7 +913,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   friendPoint: {
-    color: "#fff",
+    color: "#6a4be4",
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 6,

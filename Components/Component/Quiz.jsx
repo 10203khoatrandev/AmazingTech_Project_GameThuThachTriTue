@@ -248,7 +248,7 @@ const Quiz = () => {
   const renderLabel = useCallback(() => {
     if (dropValue || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && { color: "blue" }]}>
+        <Text style={[styles.label, isFocus && { color: "#FF5E78" }]}>
           Danh mục
         </Text>
       );
@@ -306,7 +306,7 @@ const Quiz = () => {
                   <View style={styles.dropContainer}>
                     {renderLabel()}
                     <Dropdown
-                      style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+                      style={[styles.dropdown, isFocus && { borderColor: "#FF5E78" }]}
                       placeholderStyle={styles.placeholderStyle}
                       selectedTextStyle={styles.selectedTextStyle}
                       inputSearchStyle={styles.inputSearchStyle}
@@ -329,7 +329,7 @@ const Quiz = () => {
                       renderLeftIcon={() => (
                         <AntDesign
                           style={styles.icon}
-                          color={isFocus ? "blue" : "black"}
+                          color={isFocus ? "#FF5E78" : "black"}
                           name="Safety"
                           size={20}
                         />
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginVertical: 16,
-    color: "#333",
+    color: "#FF5E78",
   },
   listContainer: {
     flexGrow: 1,
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   createRoomButton: {
-    backgroundColor: "#6A5AE0",
+    backgroundColor: "#6a4be4",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   createRoomText: {
-    color: "white",
+    color: "#fff",
     marginLeft: 8,
     fontWeight: "500",
   },

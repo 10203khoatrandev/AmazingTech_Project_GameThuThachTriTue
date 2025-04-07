@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, CommonActions } from "@react-navigation/native";
 import { realtimeDb, auth } from "../config";
 import { ref, update } from "firebase/database";
 
@@ -126,6 +126,13 @@ const QAmonitor = ({ route }) => {
     }, 500);
   };
 
+  const markPlayerAsDone = async () => {
+    if (!user?.uid || !roomid) return;
+  
+    const playerRef = ref(realtimeDb, `rooms/${roomid}/players/${user.uid}`);
+    await update(playerRef, { isDone: true });
+  };
+
   // Navigate to next question or results screen
   const handleNextQuestion = () => {
     if (questionIndex < question.length - 1) {
@@ -233,17 +240,29 @@ const QAmonitor = ({ route }) => {
       // Delay 2s trước khi chuyển màn hình
     setTimeout(() => {
       setShowLoading(false);
-      navigation.navigate("Result", {
-        answered: answeredCount + 1,
-        skipped: skippedCount,
-        numberofquestion: question.length,
-        correct: correctScoreFinal,
-        wrong: wrongScoreFinal,
-        questions: question,
-        totalTime: totalTime,
-        user: user,
-        roomid: roomid,
-      });
+      markPlayerAsDone();
+      
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: "Result",
+              params: {
+                answered: answeredCount + 1,
+                skipped: skippedCount,
+                numberofquestion: question.length,
+                correct: correctScoreFinal,
+                wrong: wrongScoreFinal,
+                questions: question,
+                totalTime: totalTime,
+                user: user,
+                roomid: roomid,
+              },
+            },
+          ],
+        })
+      );
     }, 1500);
     } else {
       // Nếu không phải câu cuối cùng, chuyển sang câu tiếp theo

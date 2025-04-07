@@ -21,7 +21,8 @@ export default {
           "photosPermission": "Cho phép ứng dụng truy cập vào thư viện ảnh để thay đổi ảnh đại diện",
           "cameraPermission": "Cho phép ứng dụng sử dụng máy ảnh để chụp ảnh đại diện"
         }
-      ]
+      ],
+      "expo-notifications",
     ],
     "ios": {
       "infoPlist": {
@@ -37,6 +38,7 @@ export default {
         "foregroundImage": "./assets/Images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "useNextNotificationsApi": true,
       "package": "com.khoatran10203.QuizApplication",
       "googleServicesFile": process.env.GOOGLE_SERVICES_JSON
     },

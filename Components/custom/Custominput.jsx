@@ -22,11 +22,11 @@ const Custominput = ({placeholder, IconName, onChangeText}) => {
 export default Custominput;
 const styles = StyleSheet.create({
   input: {
-    fontSize: 20,
+    fontSize: 16,
     width: "100%",
   },
   Icon: {
-    fontSize: 30,
+    fontSize: 22,
     marginRight: 10,
   },
   Container: {

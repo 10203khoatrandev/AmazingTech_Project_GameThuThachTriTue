@@ -16,11 +16,7 @@ export default ButtonCustom;
 const styles = StyleSheet.create({
   button: {
     width: "60%",
-    // alignSelf: "center",
-    // justifyContent: "center",
-    // alignItems: "center",
-    // elevation: 5, // Add this for shadow effect
-    backgroundColor: "#694ae1",
+    backgroundColor: "#FF5E78",
     padding: 10,
     marginVertical: 10,
     borderRadius: 10,
@@ -29,6 +25,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 16,
   },
 });

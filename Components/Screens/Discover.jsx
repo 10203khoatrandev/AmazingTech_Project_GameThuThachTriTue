@@ -8,10 +8,10 @@ import Friends from '../Component/Friends';
 
 export default function DiscoverScreen() {
   const [tabs, setTabs] = useState([
-    { id: '1', name: 'Top', active: true },
-    { id: '2', name: 'Quiz', active: false },
-    { id: '3', name: 'Room', active: false },
-    { id: '4', name: 'Friends', active: false },
+    { id: '1', name: 'Khảo sát', active: true },
+    { id: '2', name: 'Bộ câu hỏi', active: false },
+    { id: '3', name: 'Phòng chơi', active: false },
+    { id: '4', name: 'Bạn bè', active: false },
   ]);
 
   const handleTabPress = (id) => {
@@ -21,13 +21,13 @@ export default function DiscoverScreen() {
   const renderContent = () => {
     const activeTab = tabs.find(tab => tab.active);
     switch (activeTab.name) {
-      case 'Top':
+      case 'Khảo sát':
         return <TopQuiz />;
-      case 'Quiz':
+      case 'Bộ câu hỏi':
         return <Quiz />;
-      case 'Room':
+      case 'Phòng chơi':
         return <Room />;
-      case 'Friends':
+      case 'Bạn bè':
         return <Friends />;
       default:
         return null;
@@ -74,7 +74,7 @@ export default function DiscoverScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#6A5AE0', // Màu nền cho toàn bộ giao diện
+    backgroundColor: '#6a4be4',
   },
   container: {
     flex: 1,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   headerText: {
     color: 'white',
     fontSize: 25,
-    fontWeight: '550',
+    fontWeight: '700',
   },
   createRoomText: {
     marginLeft: 8,
@@ -98,14 +98,13 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     marginTop: 16,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 16,
     flex: 1,
-    // Đảm bảo tabs container không chiếm quá nhiều diện tích
   },
   activeTab: {
-    color: '#6A5AE0',
+    color: '#6a4be4',
     fontWeight: 'bold',
     marginRight: 16,
   },

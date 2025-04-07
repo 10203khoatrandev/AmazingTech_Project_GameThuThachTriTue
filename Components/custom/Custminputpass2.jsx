@@ -32,15 +32,15 @@ export default Custminputpass;
 const styles = StyleSheet.create({
   input: {
     flex: 1,
-    fontSize: 20,
+    fontSize: 16,
     paddingHorizontal: 5,
   },
   leftIcon: {
-    fontSize: 30,
+    fontSize: 22,
     marginRight: 10,
   },
   rightIcon: {
-    fontSize: 30,
+    fontSize: 22,
     paddingHorizontal: 5, // Thêm padding ngang
   },
   Container: {

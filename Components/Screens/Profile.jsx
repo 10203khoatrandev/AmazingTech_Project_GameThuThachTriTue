@@ -25,13 +25,14 @@ import * as ImagePicker from "expo-image-picker";
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
-  const [selectedTab, setSelectedTab] = useState("Badge");
+  const [selectedTab, setSelectedTab] = useState("Thành Tích");
   const [userData, setUserData] = useState(null);
   const [isNameModalVisible, setNameModalVisible] = useState(false);
   const [isSettingsModalVisible, setSettingsModalVisible] = useState(false);
   const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
   const [newName, setNewName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [gameHistory, setGameHistory] = useState([]);
 
   // Mật khẩu fields
   const [currentPassword, setCurrentPassword] = useState("");
@@ -40,6 +41,11 @@ const ProfileScreen = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Delete user
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [showDeletePassword, setShowDeletePassword] = useState(false);
 
   // Fetch user data
   useEffect(() => {
@@ -64,6 +70,37 @@ const ProfileScreen = () => {
       }
       setLoading(false);
     });
+
+    const achievementsRef = ref(realtimeDb, `users/${userId}/achievements`);
+    onValue(achievementsRef, (snapshot) => {
+      const achievementsData = snapshot.val();
+      if (achievementsData) {
+        setUserData((prevData) => ({
+          ...prevData,
+          achievements: achievementsData,
+        }));
+      }
+    });
+  }, []);
+
+  //Fetch lịch sử chơi của người dùng
+  useEffect(() => {
+    const fetchGameHistory = () => {
+      const user = auth.currentUser;
+      if (user) {
+        const historyRef = ref(realtimeDb, `users/${user.uid}/gameHistory`);
+        onValue(historyRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            setGameHistory(data);
+          } else {
+            setGameHistory([]);
+          }
+        });
+      }
+    };
+
+    fetchGameHistory();
   }, []);
 
   // Image picker for avatar
@@ -267,6 +304,55 @@ const ProfileScreen = () => {
     }
   };
 
+  // Delete user account and data
+  const handleDelete = async (password) => {
+    try {
+      setLoading(true);
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error("Người dùng chưa đăng nhập");
+      }
+
+      // Re-authenticate user
+      const credential = require("firebase/auth").EmailAuthProvider.credential(
+        user.email,
+        password
+      );
+      await require("firebase/auth").reauthenticateWithCredential(
+        user,
+        credential
+      );
+
+      // Delete data from Realtime Database
+      const uid = user.uid;
+      const userRef = ref(realtimeDb, `/users/${uid}`);
+      await set(userRef, null); // Use set(null) to delete data
+
+      // Delete account from Firebase Authentication
+      await user.delete();
+
+      // Post-deletion handling
+      await AsyncStorage.removeItem("userLogin");
+      setSettingsModalVisible(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+
+      Alert.alert("Thành công", "Tài khoản đã được xóa thành công!");
+    } catch (error) {
+      setLoading(false);
+      console.error("Lỗi xóa tài khoản:", error);
+      if (error.code === "auth/wrong-password") {
+        Alert.alert("Thông báo", "Mật khẩu không chính xác!");
+      } else if (error.code === "auth/requires-recent-login") {
+        Alert.alert("Thông báo", "Vui lòng đăng nhập lại để xác thực!");
+      } else {
+        Alert.alert("Thông báo", "Không thể xóa tài khoản. Vui lòng thử lại!");
+      }
+    }
+  };
+
   // Navigate to Help Center
   const handleNavigateToHelp = () => {
     setSettingsModalVisible(false);
@@ -288,16 +374,67 @@ const ProfileScreen = () => {
   // Render content based on selected tab
   const renderContent = () => {
     switch (selectedTab) {
-      case "Badge":
-        return <BadgeComponent userData={userData} />;
-      case "Stats":
-        return <StatsComponent userData={userData} />;
-      case "Detail":
+      case "Thành Tích":
+        return <BadgeComponent achievements={userData?.achievements} />;
+      case "Biểu đồ":
+        return <StatsComponent achievements={userData?.achievements} />;
+      case "Lịch sử chơi":
         return (
-          <View style={styles.detailContainer}>
-            <Text style={styles.detailText}>
-              Chi tiết thông tin sẽ được cập nhật...
-            </Text>
+          <View style={styles.gameHistoryContainer}>
+            {gameHistory.length > 0 ? (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.gameHistoryScrollView}
+              >
+                {gameHistory.map((game, index) => (
+                  <View key={index} style={styles.gameHistoryCard}>
+                    <View style={styles.gameHistoryHeader}>
+                      <Text style={styles.gameHistoryDate}>
+                        {new Date(game.timestamp).toLocaleString()}
+                      </Text>
+                      <View style={styles.gameScoreBadge}>
+                        <Text style={styles.gameScoreText}>
+                          {game.score} điểm
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.gameHistoryDetails}>
+                      <View style={styles.gameDetailItem}>
+                        <Icon name="star" size={16} color="#6A5AE0" />
+                        <Text style={styles.gameDetailText}>
+                          Xếp hạng: #{game.rank}
+                        </Text>
+                      </View>
+
+                      <View style={styles.gameDetailItem}>
+                        <Icon name="check-circle" size={16} color="#4CAF50" />
+                        <Text style={styles.gameDetailText}>
+                          Câu đúng: {game.correct} / {game.correct + game.wrong}
+                        </Text>
+                      </View>
+
+                      <View style={styles.gameDetailItem}>
+                        <Icon name="clock-o" size={16} color="#FF9800" />
+                        <Text style={styles.gameDetailText}>
+                          Thời gian: {game.totalTime}s
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            ) : (
+              <View style={styles.emptyHistoryContainer}>
+                <Icon name="history" size={60} color="#E0E0E0" />
+                <Text style={styles.emptyHistoryText}>
+                  Chưa có lịch sử chơi
+                </Text>
+                <Text style={styles.emptyHistorySubtext}>
+                  Hãy chơi game để tích lũy lịch sử!
+                </Text>
+              </View>
+            )}
           </View>
         );
       default:
@@ -325,7 +462,7 @@ const ProfileScreen = () => {
           style={styles.headerSettingsButton}
           onPress={() => setSettingsModalVisible(true)}
         >
-          <Icon name="cog" size={24} color="white" />
+          <Icon name="cog" size={28} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -379,7 +516,7 @@ const ProfileScreen = () => {
 
         {/* Tab Navigation */}
         <View style={styles.tabContainer}>
-          {["Badge", "Stats", "Detail"].map((tab) => (
+          {["Thành Tích", "Biểu đồ", "Lịch sử chơi"].map((tab) => (
             <TouchableOpacity
               key={tab}
               onPress={() => setSelectedTab(tab)}
@@ -486,6 +623,17 @@ const ProfileScreen = () => {
 
             <TouchableOpacity
               style={[styles.settingOption, styles.logoutOption]}
+              onPress={() => {
+                setSettingsModalVisible(false);
+                setDeleteModalVisible(true);
+              }}
+            >
+              <Icon name="trash" size={20} color="#FF4D4F" />
+              <Text style={styles.deleteText}>Xóa tài khoản</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.settingOption, styles.logoutOption]}
               onPress={handleLogout}
             >
               <Icon name="sign-out" size={20} color="#FF4D4F" />
@@ -502,6 +650,60 @@ const ProfileScreen = () => {
             >
               <Text style={styles.cancelButtonText}>Đóng</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Delete User Modal */}
+      <Modal
+        visible={isDeleteModalVisible}
+        transparent={true}
+        animationType="fade"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Xác nhận xóa tài khoản</Text>
+            <Text style={styles.inputLabel}>Nhập mật khẩu để xác nhận</Text>
+            <View style={styles.passwordInputContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                value={deletePassword}
+                onChangeText={setDeletePassword}
+                placeholder="Nhập mật khẩu"
+                secureTextEntry={!showDeletePassword}
+              />
+              <TouchableOpacity
+                onPress={() => setShowDeletePassword(!showDeletePassword)}
+                style={styles.eyeIcon}
+              >
+                <Icon
+                  name={showDeletePassword ? "eye-slash" : "eye"}
+                  size={20}
+                  color="#6A5AE0"
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => {
+                  setDeleteModalVisible(false);
+                  setDeletePassword("");
+                }}
+              >
+                <Text style={styles.cancelButtonText}>Hủy</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.saveButton]}
+                onPress={() => {
+                  handleDelete(deletePassword);
+                  setDeleteModalVisible(false);
+                  setDeletePassword("");
+                }}
+              >
+                <Text style={styles.saveButtonText}>Xóa</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -644,7 +846,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 25,
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
@@ -680,7 +882,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     borderRadius: 15,
     width: 30,
     height: 30,
@@ -723,7 +925,7 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: "row",
-    backgroundColor: "#6A5AE0",
+    backgroundColor: "#6a4be4",
     padding: 15,
     borderRadius: 20,
     justifyContent: "space-between",
@@ -780,7 +982,8 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   selectedTabContainer: {
-    backgroundColor: "rgba(106, 90, 224, 0.08)",
+    backgroundColor: "#ffe8ec",
+    borderRadius: 10,
   },
   tabText: {
     fontSize: 16,
@@ -788,14 +991,14 @@ const styles = StyleSheet.create({
     color: "#999",
   },
   selectedTabText: {
-    color: "#6A5AE0",
+    color: "#FF5E78",
   },
   tabIndicator: {
     position: "absolute",
     bottom: 0,
     width: 6,
     height: 6,
-    backgroundColor: "#6A5AE0",
+    backgroundColor: "#FF5E78",
     borderRadius: 3,
     marginTop: 4,
   },
@@ -942,6 +1145,12 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     color: "#333",
   },
+  deleteText: {
+    fontSize: 16,
+    marginLeft: 15,
+    color: "#FF4D4F",
+    fontWeight: "500",
+  },
   logoutText: {
     fontSize: 16,
     marginLeft: 15,
@@ -959,6 +1168,78 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 16,
     color: "#999",
+    textAlign: "center",
+  },
+  gameHistoryContainer: {
+    flex: 1,
+  },
+  gameHistoryScrollView: {
+    paddingBottom: 20,
+  },
+  gameHistoryCard: {
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 15,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  gameHistoryHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#F0F0F0",
+  },
+  gameHistoryDate: {
+    fontSize: 14,
+    color: "#666",
+  },
+  gameScoreBadge: {
+    backgroundColor: "#6A5AE0",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 15,
+  },
+  gameScoreText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  gameHistoryDetails: {
+    flexDirection: "column",
+  },
+  gameDetailItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  gameDetailText: {
+    marginLeft: 10,
+    fontSize: 14,
+    color: "#333",
+  },
+  emptyHistoryContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  emptyHistoryText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#666",
+    marginTop: 15,
+  },
+  emptyHistorySubtext: {
+    fontSize: 14,
+    color: "#999",
+    marginTop: 5,
     textAlign: "center",
   },
 });

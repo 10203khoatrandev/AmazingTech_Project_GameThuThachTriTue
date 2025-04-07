@@ -15,7 +15,7 @@ import Custominput from "../custom/Custominput";
 import ButtonCustom from "../custom/ButtonCustom";
 import Thanhngang from "../custom/Thanhngang";
 import Custminputpass from "../custom/Custminputpass";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import { auth, realtimeDb } from "../config";
 import { ref, get, update, set } from "firebase/database";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -40,26 +40,23 @@ const Login = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   // Cấu hình Google Auth
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId:
-      "237970140633-v8brt5vrllu9silio19r4klfu6bsj3fd.apps.googleusercontent.com", // Từ Google Cloud Console
-    iosClientId:
-      "237970140633-be83gv0np8r1vntvgvsu0r4vjlqdo4qu.apps.googleusercontent.com", // Từ Google Cloud Console
-    // androidClientId: 'YOUR_ANDROID_CLIENT_ID', // Từ Google Cloud Console
-    webClientId:
-      "237970140633-v8brt5vrllu9silio19r4klfu6bsj3fd.apps.googleusercontent.com", // Từ Google Cloud Console
-    // Thêm redirectUri với scheme
-    redirectUri: makeRedirectUri({
-      scheme: 'QuizApplication'
-    })
-  });
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   expoClientId: "175189069348-80294dibsn8b8ir5rhlt1u8eonp6el24.apps.googleusercontent.com",
+  //   iosClientId: "175189069348-8bh5jt12j86ghmh500gem6h6bo1cht3m.apps.googleusercontent.com",
+  //   // androidClientId: "YOUR_ANDROID_CLIENT_ID",
+  //   // Quan trọng: Sử dụng đúng redirectUri
+  //   redirectUri: makeRedirectUri({
+  //     useProxy: true
+  //   })
+  // }, { authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth' });
 
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
-      handleGoogleLogin(authentication);
-    }
-  }, [response]);
+  // Xử lý phản hồi Google Auth
+  // useEffect(() => {
+  //   if (response?.type === "success") {
+  //     const { authentication } = response;
+  //     handleGoogleLogin(authentication);
+  //   }
+  // }, [response]);
 
   const isValidEmail = (email) => {
     const re = /^[^@]+@[^@]+\.[^@]+$/;
@@ -126,7 +123,12 @@ const Login = () => {
         update(userRef, { status: "online" }),
       ]);
 
-      navigation.navigate("MyTabs");
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "MyTabs" }],
+        })
+      );
     } catch (error) {
       console.log("Lỗi đăng nhập:", error);
 
@@ -185,7 +187,7 @@ const Login = () => {
         await set(userRef, userData);
       }
 
-      // Lưu thông tin người dùng
+      // Lưu thông tin người dùng vào AsyncStorage
       await Promise.all([
         AsyncStorage.setItem("userLogin", JSON.stringify(userData)),
         AsyncStorage.setItem("userId", JSON.stringify(user.uid)),
@@ -216,6 +218,15 @@ const Login = () => {
     }
   };
 
+  function handleGoRegist () {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "Reis" }],
+      })
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -228,7 +239,7 @@ const Login = () => {
         >
           <View style={styles.logoContainer}>
             <Image
-              source={require("../Images/logoquiz.png")}
+              source={require("../Images/logoquizz.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -291,7 +302,7 @@ const Login = () => {
 
             <View style={styles.signupContainer}>
               <Text>Bạn Không có tài khoản?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Reis")}>
+              <TouchableOpacity onPress={handleGoRegist}>
                 <Text style={styles.signupText}>Tạo tài khoản</Text>
               </TouchableOpacity>
             </View>
@@ -317,20 +328,19 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: Platform.OS === "ios" ? "8%" : "3%",
+    marginTop: Platform.OS === "ios" ? "15%" : "6%",
     paddingHorizontal: 10,
   },
   logo: {
     width: Platform.OS === "ios" ? width * 0.92 : width * 0.95,
     height: Platform.OS === "ios" ? height * 0.35 : height * 0.38,
-    maxHeight: "45%",
+    maxHeight: "60%",
   },
   container: {
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 5,
+    marginTop: -55,
   },
   inputContainer: {
     width: "100%",
@@ -386,6 +396,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     marginLeft: 10,
-    color: "#009245",
+    color: "#FF5E78",
   },
 });

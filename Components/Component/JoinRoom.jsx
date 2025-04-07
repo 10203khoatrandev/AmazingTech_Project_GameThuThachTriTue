@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -23,12 +23,15 @@ import {
   set,
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import {
+  useNavigation,
+  useFocusEffect,
+  CommonActions,
+} from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Progress from "react-native-progress";
 import CryptoJS from "crypto-js";
 import { Animated } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 
 const CircularCountdown = ({
   setStart,
@@ -67,7 +70,17 @@ const CircularCountdown = ({
     if (timeLeft > 0) {
       timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
     } else {
-      navigation.navigate("QAmonitor", { selectedQuestion, roomid });
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [
+            {
+              name: "QAmonitor",
+              params: { selectedQuestion, roomid },
+            },
+          ],
+        })
+      );
       setStart(false);
     }
 
@@ -77,7 +90,7 @@ const CircularCountdown = ({
 
   return (
     <View style={styles.countdownContainer}>
-      <Text style={styles.countdownTitle}>Game Starting in</Text>
+      <Text style={styles.countdownTitle}>Màn chơi bắt đầu sau</Text>
       <Animated.View style={{ transform: [{ scale: animation }] }}>
         <Progress.Circle
           size={150}
@@ -91,7 +104,7 @@ const CircularCountdown = ({
           textStyle={{ fontSize: 40, fontWeight: "bold", color: "#FFFFFF" }}
         />
       </Animated.View>
-      <Text style={styles.countdownSubtitle}>Get ready to play!</Text>
+      <Text style={styles.countdownSubtitle}>Hãy sẵn sàng!</Text>
       <TouchableOpacity
         style={styles.cancelButton}
         onPress={() => {
@@ -99,7 +112,7 @@ const CircularCountdown = ({
           update(romRef, { status: "waiting" });
         }}
       >
-        <Text style={styles.cancelButtonText}>Cancel</Text>
+        <Text style={styles.cancelButtonText}>Huỷ</Text>
       </TouchableOpacity>
     </View>
   );
@@ -115,6 +128,11 @@ const JoinRoom = ({ route }) => {
   const [hashedRoomId, setHashedRoomId] = useState(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [allPlayersPickedQuestions, setAllPlayersPickedQuestions] =
+    useState(false);
+  const [playerAchievements, setPlayerAchievements] = useState({});
+  const [selectedPlayerAchievements, setSelectedPlayerAchievements] =
+    useState(null);
+  const [isAchievementModalVisible, setIsAchievementModalVisible] =
     useState(false);
 
   const auth = getAuth();
@@ -141,17 +159,49 @@ const JoinRoom = ({ route }) => {
     if (!room?.id) return;
 
     const roomStatusRef = ref(realtimeDb, `rooms/${room.id}/status`);
-    const unsubscribe = onValue(roomStatusRef, (snapshot) => {
-      if (snapshot.val() === "playing") {
+
+    const handleRoomStatusChange = async (snapshot) => {
+      const status = snapshot.val();
+
+      if (status === "playing") {
         setIsGameStarting(true);
         loadOpponentQuestions();
+
+        // Reset `isSaved` cho tất cả người chơi trong phòng nếu họ có achievements
+        const playersRef = ref(realtimeDb, `rooms/${room.id}/players`);
+        const playersSnapshot = await get(playersRef);
+
+        if (playersSnapshot.exists()) {
+          const playersData = playersSnapshot.val();
+          const updates = {};
+
+          for (const playerUid of Object.keys(playersData)) {
+            const achievementRef = ref(
+              realtimeDb,
+              `users/${playerUid}/achievements`
+            );
+            const achievementSnapshot = await get(achievementRef);
+
+            if (achievementSnapshot.exists()) {
+              // Nếu người chơi đã có achievements, đặt isSaved thành false
+              updates[`users/${playerUid}/achievements/isSaved`] = false;
+            }
+          }
+
+          if (Object.keys(updates).length > 0) {
+            await update(ref(realtimeDb), updates);
+            console.log("Reset isSaved for players with achievements.");
+          }
+        }
       } else {
         setIsGameStarting(false);
       }
-    });
+    };
+
+    const unsubscribe = onValue(roomStatusRef, handleRoomStatusChange);
 
     return () => off(roomStatusRef, unsubscribe);
-  }, [room?.id]);
+  }, [room?.id, loadOpponentQuestions]);
 
   // Lắng nghe danh sách người chơi trong phòng
   useEffect(() => {
@@ -250,6 +300,39 @@ const JoinRoom = ({ route }) => {
       });
 
       setAllPlayersPickedQuestions(allPicked);
+    }
+  }, [players]);
+
+  //Lấy thành tích của tất cả players
+  useEffect(() => {
+    const fetchPlayerAchievements = async () => {
+      const achievements = {};
+
+      for (const player of players) {
+        const playerRef = ref(realtimeDb, `users/${player.uid}/achievements`);
+        const snapshot = await get(playerRef);
+
+        if (snapshot.exists()) {
+          achievements[player.uid] = snapshot.val();
+        } else {
+          achievements[player.uid] = {
+            gamesPlayed: 0,
+            bestScore: 0,
+            totalCorrectAnswers: 0,
+            fastestTime: "N/A",
+            totalFirstPlaces: 0,
+            totalWins: 0,
+            winStreak: 0,
+            maxWinStreak: 0,
+          };
+        }
+      }
+
+      setPlayerAchievements(achievements);
+    };
+
+    if (players.length > 0) {
+      fetchPlayerAchievements();
     }
   }, [players]);
 
@@ -359,6 +442,21 @@ const JoinRoom = ({ route }) => {
     update(playerRef, { isReady: !isReady });
   };
 
+  //Reset trạng thái lưu của người dùng
+  const resetPlayerAchievements = async (playerUid) => {
+    try {
+      const playerRef = ref(realtimeDb, `users/${playerUid}/achievements`);
+      const achievementSnapshot = await get(playerRef);
+
+      if (achievementSnapshot.exists()) {
+        await update(playerRef, { isSaved: false });
+        console.log(`Reset isSaved for ${playerUid}`);
+      }
+    } catch (error) {
+      console.error(`Error resetting isSaved for ${playerUid}:`, error);
+    }
+  };
+
   // Bắt đầu trò chơi
   const handleStartGame = async () => {
     if (players.length < 2) {
@@ -450,6 +548,19 @@ const JoinRoom = ({ route }) => {
 
     const playerRef = ref(realtimeDb, `rooms/${room.id}/players/${player.id}`);
     await remove(playerRef);
+    const userRef = ref(realtimeDb, `users/${player.id}`);
+    const userSnapshot = await get(userRef);
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.val();
+      const currentPoint = userData.point || 0;
+
+      // Refund lại điểm cho người chơi
+      await update(userRef, {
+        point: currentPoint + room.point,
+      });
+    }
+
     await AsyncStorage.removeItem("currentRoomId");
 
     // If the host leaves, transfer host role to another player
@@ -485,36 +596,140 @@ const JoinRoom = ({ route }) => {
     navigation.navigate("QuestionPicker");
   };
 
-  // Render a player item
-  const renderPlayerItem = ({ item }) => (
-    <View style={styles.playerItem}>
-      <View style={styles.playerInfoColumn}>
-        <Text style={styles.playerName}>{item.username}</Text>
-        <View style={styles.pointsContainer}>
-          <Icon name="diamond" size={16} color="#ffffff" />
-          <Text style={styles.playerPoint}> {item.userPoint}</Text>
+  // Rời phòng tạm thời
+  const handleTemporaryLeave = async () => {
+    if (!user?.uid || !room?.id) return;
+
+    const playerRef = ref(realtimeDb, `rooms/${room.id}/players/${user.uid}`);
+    await update(playerRef, { isTemporarilyInactive: true });
+
+    // Lưu roomId vào AsyncStorage để sử dụng sau
+    await AsyncStorage.setItem("currentRoomId", room.id);
+
+    Alert.alert(
+      "Temporary Leave",
+      "You have temporarily left the room. You will be notified when someone joins."
+    );
+
+    navigation.goBack();
+
+    // Lắng nghe sự kiện khi có người chơi mới tham gia
+    const roomPlayersRef = ref(realtimeDb, `rooms/${room.id}/players`);
+    onChildAdded(roomPlayersRef, async (snapshot) => {
+      const newPlayer = snapshot.val();
+      if (newPlayer && newPlayer.uid !== user.uid) {
+        Alert.alert(
+          "New Player Joined",
+          "A new player has joined your room. Rejoining now..."
+        );
+
+        // Điều hướng người dùng quay lại phòng
+        navigation.navigate("JoinRoom", { room });
+      }
+    });
+  };
+
+  const PlayerAchievementsTooltip = ({ achievements }) => {
+    if (!achievements) return null;
+
+    return (
+      <View style={styles.achievementsTooltip}>
+        <View style={styles.achievementsTooltipContent}>
+          <View style={styles.achievementsTooltipRow}>
+            <Text style={styles.achievementsTooltipLabel}>Win Rate:</Text>
+            <Text style={styles.achievementsTooltipValue}>
+              {achievements.gamesPlayed > 0
+                ? (
+                    (achievements.totalWins / achievements.gamesPlayed) *
+                    100
+                  ).toFixed(2) + "%"
+                : "0%"}
+            </Text>
+          </View>
+          <View style={styles.achievementsTooltipRow}>
+            <Text style={styles.achievementsTooltipLabel}>Games:</Text>
+            <Text style={styles.achievementsTooltipValue}>
+              {achievements.gamesPlayed || 0}
+            </Text>
+          </View>
+          <View style={styles.achievementsTooltipRow}>
+            <Text style={styles.achievementsTooltipLabel}>Wins:</Text>
+            <Text style={styles.achievementsTooltipValue}>
+              {achievements.totalWins || 0}
+            </Text>
+          </View>
+          <View style={styles.achievementsTooltipRow}>
+            <Text style={styles.achievementsTooltipLabel}>Best Score:</Text>
+            <Text style={styles.achievementsTooltipValue}>
+              {achievements.bestScore || 0}
+            </Text>
+          </View>
+          <View style={styles.achievementsTooltipRow}>
+            <Text style={styles.achievementsTooltipLabel}>
+              Total First Place:
+            </Text>
+            <Text style={styles.achievementsTooltipValue}>
+              {achievements.totalFirstPlaces || 0}
+            </Text>
+          </View>
         </View>
       </View>
-      <Text
-        style={[
-          styles.playerTag,
-          { backgroundColor: item.isHost ? "#FFBF00" : "#ccc" },
-        ]}
-      >
-        {item.isHost ? "Host" : "Player"}
-      </Text>
-      <View
-        style={[
-          styles.readyStatus,
-          { backgroundColor: item.isReady ? "green" : "gray" },
-        ]}
-      >
-        <Text style={styles.readyButtonText}>
-          {item.isReady ? "Đã sẵn sàng" : "Chưa sẵn sàng"}
+    );
+  };
+
+  // Render a player item
+  const renderPlayerItem = ({ item }) => {
+    const achievements = playerAchievements[item.uid];
+
+    const handleShowAchievements = () => {
+      setSelectedPlayerAchievements(
+        selectedPlayerAchievements?.uid === item.uid
+          ? null
+          : { ...achievements, uid: item.uid }
+      );
+    };
+
+    return (
+      <View style={styles.playerItem}>
+        <View style={styles.playerInfoColumn}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={styles.playerName}>{item.username}</Text>
+            <TouchableOpacity
+              onPress={handleShowAchievements}
+              style={styles.infoIcon}
+            >
+              <Icon name="info-circle" size={16} color="#FFFFFF" />
+            </TouchableOpacity>
+            {selectedPlayerAchievements?.uid === item.uid && (
+              <PlayerAchievementsTooltip achievements={achievements} />
+            )}
+          </View>
+          <View style={styles.pointsContainer}>
+            <Icon name="diamond" size={16} color="#ffffff" />
+            <Text style={styles.playerPoint}> {item.userPoint}</Text>
+          </View>
+        </View>
+        <Text
+          style={[
+            styles.playerTag,
+            { backgroundColor: item.isHost ? "#FFBF00" : "#ccc" },
+          ]}
+        >
+          {item.isHost ? "Host" : "Người chơi"}
         </Text>
+        <View
+          style={[
+            styles.readyStatus,
+            { backgroundColor: item.isReady ? "green" : "gray" },
+          ]}
+        >
+          <Text style={styles.readyButtonText}>
+            {item.isReady ? "Sẵn sàng" : "Chưa sẵn sàng"}
+          </Text>
+        </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const isCurrentPlayerHost = players.some(
     (p) => p.uid === user?.uid && p.isHost
@@ -529,7 +744,7 @@ const JoinRoom = ({ route }) => {
           <TouchableOpacity style={styles.iconButton} onPress={handleLeaveRoom}>
             <Icon name="arrow-left" size={20} color="#6A5AE0" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Game Room</Text>
+          <Text style={styles.headerTitle}>Phòng Chơi</Text>
           <TouchableOpacity style={styles.iconButton}>
             <Icon name="cog" size={20} color="#6A5AE0" />
           </TouchableOpacity>
@@ -547,7 +762,7 @@ const JoinRoom = ({ route }) => {
               onPress={handleCopyRoomId}
               activeOpacity={0.7}
             >
-              <Text style={styles.roomIdLabel}>Room Code:</Text>
+              <Text style={styles.roomIdLabel}>Mã Phòng:</Text>
               <Text style={styles.roomIdText}>
                 {hashedRoomId || "Creating..."}
               </Text>
@@ -566,7 +781,10 @@ const JoinRoom = ({ route }) => {
           <View style={styles.playerIconContainer}>
             <View style={styles.playerCountContainer}>
               <Icon name="users" size={20} color="white" />
-              <Text style={styles.playerCount}> {players.length} / 2</Text>
+              <Text style={styles.playerCount}>
+                {" "}
+                {players.length} / {room.maxPlayers}
+              </Text>
             </View>
             <TouchableOpacity
               style={[
@@ -587,19 +805,39 @@ const JoinRoom = ({ route }) => {
                   hasPickedQuestions && styles.questionButtonTextSelected,
                 ]}
               >
-                {hasPickedQuestions ? "Questions Selected" : "Select Questions"}
+                {hasPickedQuestions ? "Đã Chọn Bộ Câu Hỏi" : "Chọn Bộ Câu Hỏi"}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Player List */}
-        <Text style={styles.sectionTitle}>Players</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Text style={styles.sectionTitle}>Người chơi</Text>
+          <TouchableOpacity
+            style={styles.tempLeaveButton}
+            onPress={handleTemporaryLeave}
+          >
+            <Icon
+              name="pause-circle"
+              size={20}
+              color="white"
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.tempLeaveButtonText}>Tạm Rời Phòng</Text>
+          </TouchableOpacity>
+        </View>
         {players.length === 0 ? (
           <View style={styles.emptyPlayerList}>
             <Icon name="user-times" size={50} color="rgba(255,255,255,0.5)" />
             <Text style={styles.emptyPlayerText}>
-              No players have joined yet
+              Chưa có ai tham gia vào phòng
             </Text>
           </View>
         ) : (
@@ -644,7 +882,7 @@ const JoinRoom = ({ route }) => {
                 color="white"
                 style={styles.buttonIcon}
               />
-              <Text style={styles.joinButtonText}>Join Room</Text>
+              <Text style={styles.joinButtonText}>Tham Gia Phòng</Text>
             </TouchableOpacity>
           ) : isCurrentPlayerHost ? (
             <TouchableOpacity
@@ -658,12 +896,12 @@ const JoinRoom = ({ route }) => {
                 color="white"
                 style={styles.buttonIcon}
               />
-              <Text style={styles.startButtonText}>START GAME</Text>
+              <Text style={styles.startButtonText}>BẮT ĐẦU</Text>
             </TouchableOpacity>
           ) : allPlayersPickedQuestions ? (
             <View style={styles.waitingContainer}>
               <Text style={styles.waitingText}>
-                Waiting for host to start the game...
+                Đang đợi host bắt đầu trò chơi...
               </Text>
               <Progress.Bar
                 indeterminate={true}
@@ -676,12 +914,58 @@ const JoinRoom = ({ route }) => {
           ) : (
             <View style={styles.pickQuestionsPrompt}>
               <Text style={styles.pickQuestionsText}>
-                Please select your questions to continue
+                Hãy chọn bộ câu hỏi trước khi tiếp tục
               </Text>
             </View>
           )}
         </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isAchievementModalVisible}
+        onRequestClose={() => setIsAchievementModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Player Achievements</Text>
+            {selectedPlayerAchievements ? (
+              <View>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>Games Played:</Text>{" "}
+                  {selectedPlayerAchievements.gamesPlayed || 0}
+                </Text>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>Total Wins:</Text>{" "}
+                  {selectedPlayerAchievements.totalWins || 0}
+                </Text>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>Best Score:</Text>{" "}
+                  {selectedPlayerAchievements.bestScore || 0}
+                </Text>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>Fastest Time:</Text>{" "}
+                  {selectedPlayerAchievements.fastestTime !== Number.MAX_VALUE
+                    ? `${selectedPlayerAchievements.fastestTime}s`
+                    : "N/A"}
+                </Text>
+                <Text style={styles.modalText}>
+                  <Text style={styles.modalLabel}>Win Streak:</Text>{" "}
+                  {selectedPlayerAchievements.winStreak || 0}
+                </Text>
+              </View>
+            ) : (
+              <Text style={styles.modalText}>No achievements available.</Text>
+            )}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setIsAchievementModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -830,7 +1114,7 @@ const styles = StyleSheet.create({
     color: "#FFC300",
   },
   sectionTitle: {
-    alignSelf: "flex-start",
+    alignSelf: "center",
     fontSize: 18,
     fontWeight: "bold",
     color: "white",
@@ -1063,6 +1347,119 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     textAlign: "center",
+  },
+  tempLeaveButton: {
+    backgroundColor: "#FFA500",
+    paddingVertical: 15,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    width: "50%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    marginBottom: 10,
+  },
+  tempLeaveButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  achievementIcons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  achievementIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  achievementText: {
+    color: "white",
+    fontSize: 12,
+    marginLeft: 5,
+  },
+  infoIcon: {
+    marginLeft: 8,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: "#555",
+  },
+  modalLabel: {
+    fontWeight: "bold",
+    color: "#333",
+  },
+  closeButton: {
+    marginTop: 20,
+    backgroundColor: "#6A5AE0",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  closeButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  achievementsTooltip: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    marginTop: 8,
+    backgroundColor: "rgba(255,255,255,0.9)",
+    borderRadius: 10,
+    padding: 10,
+    width: 200,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    zIndex: 1000,
+  },
+  achievementsTooltipContent: {
+    flexDirection: "column",
+  },
+  achievementsTooltipRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+  achievementsTooltipLabel: {
+    fontWeight: "bold",
+    color: "#6A5AE0",
+    fontSize: 12,
+  },
+  achievementsTooltipValue: {
+    color: "#333",
+    fontSize: 12,
   },
 });
 

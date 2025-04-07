@@ -16,14 +16,14 @@ import Custominput from "../custom/Custominput";
 import ButtonCustom from "../custom/ButtonCustom";
 import Thanhngang from "../custom/Thanhngang";
 import Custminputpass2 from "../custom/Custminputpass2";
-import { useNavigation } from "@react-navigation/native";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 import { auth, realtimeDb } from "../config";
 import { ref, set } from "firebase/database";
 import Toast from "react-native-toast-message";
 import Custminputpass from "../custom/Custminputpass";
 
 // Lấy kích thước màn hình để tính toán kích thước logo phù hợp
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const Reis = () => {
   const navigation = useNavigation();
@@ -66,7 +66,7 @@ const Reis = () => {
         showToast("Thông báo", "Email không hợp lệ!");
         return;
       }
-      
+
       // Hiển thị trạng thái loading
       setLoading(true);
 
@@ -75,12 +75,12 @@ const Reis = () => {
         email,
         password
       );
-      
+
       if (!userCredential?.user) {
         showToast("Lỗi", "Không thể tạo tài khoản. Vui lòng thử lại!");
         return;
       }
-      
+
       const user = userCredential.user;
 
       // Gửi email xác thực
@@ -97,22 +97,38 @@ const Reis = () => {
         createdAt: new Date().toISOString(),
       });
 
-      showToast("Thành công", "Mã xác nhận đã gửi đến email của bạn", "success");
-      navigation.navigate("Login");
+      showToast(
+        "Thành công",
+        "Mã xác nhận đã gửi đến email của bạn",
+        "success"
+      );
+      handleGoLogin();
     } catch (error) {
       console.log("Lỗi đăng ký:", error);
-      
+
       if (error.code === "auth/email-already-in-use") {
         showToast("Thông báo", "Email này đã được sử dụng!");
       } else if (error.code === "auth/weak-password") {
         showToast("Thông báo", "Mật khẩu cần ít nhất 6 ký tự!");
       } else {
-        showToast("Lỗi", "Tạo tài khoản không thành công. Vui lòng thử lại sau!");
+        showToast(
+          "Lỗi",
+          "Tạo tài khoản không thành công. Vui lòng thử lại sau!"
+        );
       }
     } finally {
       setLoading(false);
     }
   };
+
+  function handleGoLogin() {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      })
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -126,7 +142,7 @@ const Reis = () => {
         >
           <View style={styles.logoContainer}>
             <Image
-              source={require("../Images/logoquiz.png")}
+              source={require("../Images/logoquizz.png")}
               style={styles.logo}
               resizeMode="contain"
             />
@@ -170,21 +186,17 @@ const Reis = () => {
               disabled={loading}
             >
               {loading && (
-                <ActivityIndicator size="small" color="#fff" style={styles.loader} />
+                <ActivityIndicator
+                  size="small"
+                  color="#fff"
+                  style={styles.loader}
+                />
               )}
             </ButtonCustom>
 
-            <Thanhngang title="hoặc" />
-
-            <View style={styles.socialContainer}>
-              <TouchableOpacity>
-                <Image source={require("../Images/logoGoogle.png")} />
-              </TouchableOpacity>
-            </View>
-
             <View style={styles.loginContainer}>
               <Text>Bạn đã có tài khoản?</Text>
-              <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <TouchableOpacity onPress={handleGoLogin}>
                 <Text style={styles.loginText}>Đăng nhập</Text>
               </TouchableOpacity>
             </View>
@@ -210,20 +222,19 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: Platform.OS === "ios" ? "5%" : "2%",
+    marginTop: Platform.OS === "ios" ? "15%" : "6%",
     paddingHorizontal: 10,
   },
   logo: {
     width: Platform.OS === "ios" ? width * 0.92 : width * 0.95,
-    height: Platform.OS === "ios" ? height * 0.28 : height * 0.32,
-    maxHeight: "40%",
+    height: Platform.OS === "ios" ? height * 0.35 : height * 0.38,
+    maxHeight: "60%",
   },
   container: {
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 5,
+    marginTop: -35,
   },
   inputContainer: {
     width: "100%",
@@ -243,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     marginLeft: 10,
-    color: "#009245",
+    color: "#FF5E78",
   },
   loader: {
     marginLeft: 10,
